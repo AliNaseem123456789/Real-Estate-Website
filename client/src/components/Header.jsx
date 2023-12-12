@@ -21,6 +21,9 @@ export default function Header() {
           <Link to='/'>
           <li className='hidden sm:inline text-white font-mono'>Home</li>
           </Link>
+          <Link to='/actions'>
+          <li className='hidden sm:inline text-white font-mono'>Action</li>
+          </Link>
           <Link to='/about'>
           <li className='hidden sm:inline text-white font-mono'>About</li>
           </Link>
