@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from 'firebase/storage';
-import { app } from '../firebase';
-import { set } from 'mongoose';
+// import {
+//   getDownloadURL,
+//   getStorage,
+//   ref,
+//   uploadBytesResumable,
+// } from 'firebase/storage';
+// import { app } from '../firebase';
+// import { set } from 'mongoose';
 
 export default function CreateListing() {
   const [files, setFiles] = useState([]);

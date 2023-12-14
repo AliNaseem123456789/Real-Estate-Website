@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import p1 from "./p1.webp";
-import p2 from "./p2.webp";
-import p3 from "./p3.webp";
+import p1 from "../../src/assets/p1.webp";
+import p2 from "../../src/assets/p2.webp";
+import p3 from "../../src/assets/p3.webp";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBed, faBath, faExpand, faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
@@ -21,7 +21,8 @@ export default function Complete() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/properties/${id}`);
+        // const response = await axios.get(`http://localhost:3001/properties/${id}`);
+        const response = await axios.get(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
         setProperty(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
