@@ -1,9 +1,7 @@
+// const response = await axios.get(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import p1 from "../../src/assets/p1.webp";
-import p2 from "../../src/assets/p2.webp";
-import p3 from "../../src/assets/p3.webp";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBed, faBath, faExpand, faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
@@ -21,8 +19,7 @@ export default function Complete() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await axios.get(`http://localhost:3001/properties/${id}`);
-        const response = await axios.get(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
+        const response = await axios.get(`http://localhost:3001/properties/${id}`);
         setProperty(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -31,9 +28,26 @@ export default function Complete() {
     fetchData();
   }, [id]);
 
-  if (!property) return <div className="text-center py-20 text-gray-600">Loading...</div>;
+  if (!property)
+    return <div className="text-center py-20 text-gray-600">Loading...</div>;
 
-  const images = [p1, p2, p3];
+  // --- Load Images Dynamically ---
+  const prefix = property.image_prefix;
+
+  const loadImage = (n) => {
+    try {
+      return new URL(
+        `/src/assets/properties/${prefix}-${n}.jpeg`,
+        import.meta.url
+      ).href;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  const images = [loadImage(1), loadImage(2), loadImage(3), loadImage(4)].filter(
+    (img) => img !== null
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -49,11 +63,16 @@ export default function Complete() {
                   className="h-64 sm:h-80 rounded-xl overflow-hidden cursor-pointer relative shadow-lg"
                   onClick={() => setIsModalOpen(true)}
                 >
-                  <img src={img} alt={`Property ${idx}`} className="w-full h-full object-cover" />
+                  <img
+                    src={img}
+                    alt={`Property ${idx}`}
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition"></div>
                 </div>
               ))}
             </div>
+
             <Modal
               isOpen={isModalOpen}
               onRequestClose={() => setIsModalOpen(false)}
@@ -66,20 +85,36 @@ export default function Complete() {
               >
                 &times;
               </button>
-              <img src={p1} alt="Property Large" className="w-full h-96 object-cover" />
+
+              {/* Larger version of first image */}
+              <img
+                src={images[0]}
+                alt="Property Large"
+                className="w-full h-96 object-cover"
+              />
             </Modal>
           </div>
 
           {/* Right Section: Details */}
           <div className="flex-1 flex flex-col gap-6">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">{property.title}</h1>
-            <p className="text-2xl font-semibold text-red-500">PKR {property.price}</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+              {property.title}
+            </h1>
+            <p className="text-2xl font-semibold text-red-500">
+              PKR {property.price}
+            </p>
             <p className="text-gray-700">{property.description}</p>
 
             <div className="flex gap-6 text-gray-600 text-lg">
-              <div className="flex items-center gap-2"><FontAwesomeIcon icon={faBed} /> {property.bedroom} Beds</div>
-              <div className="flex items-center gap-2"><FontAwesomeIcon icon={faBath} /> {property.bathroom} Baths</div>
-              <div className="flex items-center gap-2"><FontAwesomeIcon icon={faExpand} /> {property.size} sqft</div>
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faBed} /> {property.bedroom} Beds
+              </div>
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faBath} /> {property.bathroom} Baths
+              </div>
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faExpand} /> {property.size} sqft
+              </div>
             </div>
 
             <p className="text-gray-700 font-semibold mt-2">{property.type}</p>
@@ -115,7 +150,9 @@ export default function Complete() {
         className="max-w-md mx-auto mt-40 bg-white rounded-xl shadow-lg p-6 outline-none"
         overlayClassName="fixed inset-0 bg-black/50 flex justify-center items-start z-50"
       >
-        <h2 className="text-xl font-semibold mb-4">Call {property.publisher_name}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Call {property.publisher_name}
+        </h2>
         <p className="mb-6">Phone: {property.publisher_phone || 'N/A'}</p>
         <button
           onClick={() => setMsgModal(false)}
@@ -124,13 +161,17 @@ export default function Complete() {
           Close
         </button>
       </Modal>
+
+      {/* Email Modal */}
       <Modal
         isOpen={emailModal}
         onRequestClose={() => setEmailModal(false)}
         className="max-w-md mx-auto mt-40 bg-white rounded-xl shadow-lg p-6 outline-none"
         overlayClassName="fixed inset-0 bg-black/50 flex justify-center items-start z-50"
       >
-        <h2 className="text-xl font-semibold mb-4">Contact {property.publisher_name}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Contact {property.publisher_name}
+        </h2>
         <ContactForm />
         <button
           onClick={() => setEmailModal(false)}
