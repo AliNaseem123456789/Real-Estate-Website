@@ -1,24 +1,26 @@
 // components/FeaturedListings.jsx
 import { Link } from 'react-router-dom';
-
+import featuredlsiting1 from "../../assets/featuredlisting1.jpeg"
+import featuredlisting2 from "../../assets/featuredlisting2.jpeg"
+import featuredlisting3 from "../../assets/featuredlisting3.jpeg"
 const listings = [
   {
-    id: 1,
-    name: 'Luxury Villa in Beverly Hills',
-    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?&w=600',
-    price: '$3,200,000',
+    id: "65a27e1897fedcd313d5d3d3",
+    name: '12 Marla Plot in Clifton, Karachi',
+    image:  featuredlsiting1,
+    price: 'PKR 2400000',
   },
   {
-    id: 2,
-    name: 'Modern Apartment Downtown',
-    image: 'https://images.unsplash.com/photo-1572120360610-d971b9b639f8?&w=600',
-    price: '$850,000',
+    id: "65a27e1897fedcd313d5d3d8",
+    name: '4 Bedrooms House in G-14, Islamabadn',
+    image: featuredlisting2,
+    price: 'PKR 15000000',
   },
   {
-    id: 3,
-    name: 'Cozy Family House',
-    image: 'https://images.unsplash.com/photo-1598928506312-94bfa4d21b2f?&w=600',
-    price: '$450,000',
+    id: '65a27e1897fedcd313d5d3cd',
+    name: '10 Marla Plot in Bahria Town, Karachi',
+    image: featuredlisting3,
+    price: 'PKR 2000000',
   },
 ];
 
@@ -28,7 +30,7 @@ export default function FeaturedListings() {
       <h2 className="text-3xl font-bold text-center mb-12">Featured Listings</h2>
       <div className="grid md:grid-cols-3 gap-8">
         {listings.map((listing) => (
-          <Link key={listing.id} to={`/listing/${listing.id}`}>
+          <Link key={listing.id} to={`properties/${listing.id}`}>
             <div className="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition">
               <div
                 className="h-64 bg-cover bg-center"

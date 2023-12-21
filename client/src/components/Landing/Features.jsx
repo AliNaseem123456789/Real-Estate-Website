@@ -14,7 +14,7 @@ export default function Features() {
         "A real estate agent can provide you with a clear breakdown of costs so that you can avoid surprise expenses.",
       button: "Find a local agent",
       image: buying,
-      action: "buy",
+      action: "sell",
     },
     {
       title: "Rent a home",
@@ -30,13 +30,17 @@ export default function Features() {
         "No matter what path you take to sell your home, we can help you navigate a successful sale.",
       button: "See your options",
       image: selling,
-      action: "sell",
+      action: "input",
     },
   ];
 
-  const handleCardClick = (actionType) => {
+const handleCardClick = (actionType) => {
+  if (actionType === "input") {
+    navigate("/input");
+  } else {
     navigate(`/actions?action=${actionType}`);
-  };
+  }
+};
 
   return (
     <div className="w-full flex justify-center py-12 bg-white">
