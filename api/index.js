@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import cors from "cors";
 dotenv.config();
 import PropertyModel from './models/property.js';
+import upload from './middelware/upload.js';
 // mongoose.connect(process.env.MONGO).then(() =>{
 //     console.log('connected to MongoDB');})
 //     .catch((err) =>{
@@ -23,6 +24,7 @@ mongoose.connect(
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 app.use(cors());
 // allow json as input of this server
 
@@ -32,13 +34,12 @@ app.listen(3001, () => {
     console.log('server is running on port 3000');
 });
 
-
-app.post('/submitForm',(req, res) => {
-    const formData = req.body;
-    console.log('Received form data:', formData);
-    const { type,action,size,title,city, address, description,price ,bedroom,bathroom,publisher_name,publisher_num,publisher_email} = req.body;
-    const NewProperty=new PropertyModel(
-      {
+app.post(
+  "/submitForm",
+  upload.array("images", 4),
+  async (req, res) => {
+    try {
+      let {
         type,
         action,
         size,
@@ -52,10 +53,51 @@ app.post('/submitForm',(req, res) => {
         publisher_name,
         publisher_num,
         publisher_email,
+      } = req.body;
+
+      // Handle case where type or action comes as an array
+      if (Array.isArray(type)) {
+        type = type.filter(v => v)[type.filter(v => v).length - 1] || "";
+      }
+      if (Array.isArray(action)) {
+        action = action.filter(v => v)[action.filter(v => v).length - 1] || "";
+      }
+
+      // Optional: basic validation
+      if (!type || !action) {
+        return res.status(400).json({ message: "Type and Action are required" });
+      }
+
+      const newProperty = new PropertyModel({
+        type,
+        action,
+        size,
+        title,
+        city,
+        address,
+        description,
+        price,
+        bedroom,
+        bathroom,
+        publisher_name,
+        publisher_num,
+        publisher_email,
+        image_prefix: req.image_prefix,
       });
-      NewProperty.save()
-    res.status(200).json({ message: 'Form data received successfully' });
-  });
+
+      await newProperty.save();
+
+      res.status(201).json({
+        message: "Property saved successfully",
+        image_prefix: req.image_prefix,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Upload failed" });
+    }
+  }
+);
+
   app.get('/properties/:id', async (req, res, next) => {
     const { id } = req.params;
     try {
