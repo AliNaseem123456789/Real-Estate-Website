@@ -42,9 +42,15 @@ export default function InputForm() {
     for (let i = 0; i < images.length; i++) data.append('images', images[i]);
 
     try {
-      await axios.post('http://localhost:3001/submitForm', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      // await axios.post(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
+      await axios.post(
+  'https://real-estate-website-uvk2.onrender.com/submitForm',
+  data,
+  {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }
+);
+
       alert('Property uploaded successfully!');
       setFormData({
         type: '',
