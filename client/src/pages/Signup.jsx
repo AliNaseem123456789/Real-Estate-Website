@@ -1,71 +1,166 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import { FaGoogle } from 'react-icons/fa';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
-  // formData store all info typed by user
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {// prevent refreshing the page when we submit
+    try {
       setLoading(true);
-      // after submit we fetch data
-      // create proxy
-      const res = await fetch('/api/auth/signup',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-      // convert response we get to json
+      const res = await fetch('https://real-estate-website-uvk2.onrender.com/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
       const data = await res.json();
-      console.log(data);
-      if (data.success == false) {
-        setLoading(false);
+      if (data.success === false) {
         setError(data.message);
+        setLoading(false);
         return;
       }
       setLoading(false);
-      // already load
       setError(null);
       navigate('/sign-in');
-    }
-    catch (error) {
+    } catch (err) {
       setLoading(false);
-      setError(error.message);
+      setError(err.message);
     }
   };
+
+  const animatedLines = [
+    'Join Us Today!',
+    'Build Your Property Profile',
+    'Start Managing Smarter',
+  ];
+
+  const [currentLine, setCurrentLine] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentLine((prev) => (prev + 1) % animatedLines.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl text-center font-semibold my-7'>Sign Up</h1>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        <input type="text" placeholder='username' className='border p-3 rounded-lg' id='username' onChange={handleChange} />
-        <input type="email" placeholder='email' className='border p-3 rounded-lg' id='email' onChange={handleChange} />
-        <input type="password" placeholder='password' className='border p-3 rounded-lg' id='password' onChange={handleChange} />
-        <button disabled={loading} className='bg-slate-700 shadow-lg shadow-cyan-500/50 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
-          {loading ? 'loading...' : 'sign up'}
-          {/* if loading we see loading otherwise signup */}
-        </button>
-        <OAuth/>
-      </form>
-      <div className='flex gap-2 mt-5'>
-        <p>Have an account?</p>
-        <Link to={"/sign-in"}>
-          <span className='text-blue-700'>Sign in</span>
-        </Link>
+    <div className="flex flex-col lg:flex-row min-h-screen">
+
+      {/* Left Animated Section */}
+      <div className="hidden lg:flex w-1/2 bg-gray-900 items-center justify-center relative overflow-hidden p-12">
+        <div className="text-center">
+          {animatedLines.map((line, index) => (
+            <h1
+              key={index}
+              className={`text-5xl font-extrabold text-white mb-6 transition-all duration-1000 ${
+                index === currentLine
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 -translate-y-5 absolute'
+              }`}
+            >
+              {line}
+            </h1>
+          ))}
+        </div>
+
+        {/* Abstract shapes */}
+        <span className="absolute w-32 h-32 bg-purple-700 rounded-full mix-blend-multiply opacity-20 animate-pulse -top-16 -left-16"></span>
+        <span className="absolute w-48 h-48 bg-red-600 rounded-full mix-blend-multiply opacity-20 animate-pulse -bottom-24 -right-24"></span>
       </div>
-      {error && <p className='text-red-500 mt-5'>{error}</p>}
+
+      {/* Right Form Section */}
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-gray-50">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 space-y-6 animate-fadeIn">
+          <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+            Sign Up
+          </h2>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+
+            {/* Username */}
+            <div>
+              <label className="text-gray-700 font-medium mb-1 block">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="text-gray-700 font-medium mb-1 block">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-gray-700 font-medium mb-1 block">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-white text-red-600 font-semibold py-3 rounded-xl shadow-md border border-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 disabled:opacity-70"
+            >
+              {loading ? 'Loading...' : 'Sign Up'}
+            </button>
+          </form>
+
+          {/* OR Divider */}
+          <div className="flex items-center gap-2 text-gray-400 my-3">
+            <span className="flex-1 border-b border-gray-300"></span>
+            <span className="text-sm">OR</span>
+            <span className="flex-1 border-b border-gray-300"></span>
+          </div>
+
+          {/* OAuth */}
+          <div className="flex justify-center gap-4">
+            <button className="flex items-center justify-center gap-2 w-full border border-gray-300 rounded-xl py-2 hover:bg-red-600 hover:text-white transition-all duration-300">
+              <FaGoogle /> Sign up with Google
+            </button>
+            <OAuth />
+          </div>
+
+          <div className="text-center text-gray-600 mt-4">
+            <p>
+              Already have an account?{' '}
+              <Link to="/sign-in" className="text-red-600 hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </div>
+
+          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+        </div>
+      </div>
     </div>
-  )
+  );
 }

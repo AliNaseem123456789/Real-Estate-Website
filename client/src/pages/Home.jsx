@@ -3,7 +3,7 @@ import Hero from '../components/Landing/Hero';
 import Features from '../components/Landing/Features';
 import Testimonials from '../components/Landing/Testimonials';
 import Pricing from '../components/Landing/Pricing';
-import Footer from '../components/Landing/Footer';
+
 import CTA from '../components/Landing/CTA';
 import Stats from '../components/Landing/Stats';
 import HomeRecommendations from '../components/Landing/HomeRecommendations';
@@ -20,7 +20,7 @@ export default function Home() {
       {/* <Pricing /> */}
       <CTA/>
       <Stats/>
-      <Footer />
+      
     </div>
   );
 }
