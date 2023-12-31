@@ -11,7 +11,7 @@ import InputForm from './pages/input';
 import Complete from './pages/complete';
 import Action from './pages/Action';
 // import Home from './pages/Home3';
-
+import Footer from '../src/components/Landing/Footer';
 export default function App() {
   return <BrowserRouter>
   <Header/>
@@ -29,6 +29,7 @@ export default function App() {
         <Route path='/create-listing' element={<CreateListing />} />
       </Route>
     </Routes>
+    <Footer />
   </BrowserRouter>
 }
 
