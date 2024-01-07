@@ -1,77 +1,85 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import building from './imarat.svg';
-import { faBed, faBath, faHome, faDollarSign, faBuilding } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FaBed, FaBath, FaHeart } from 'react-icons/fa';
+import React, { useState } from "react";
+import axios from "axios";
+import building from "../assets/imarat.svg";
+import {
+  faBed,
+  faBath,
+  faHome,
+  faDollarSign,
+  faBuilding,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FaBed, FaBath, FaHeart } from "react-icons/fa";
 
 export default function InputForm() {
   const [formData, setFormData] = useState({
-    type: '',
-    action: '',
-    size: '',
-    title: '',
-    city: '',
-    address: '',
-    description: '',
-    price: '',
-    bedroom: '',
-    bathroom: '',
-    publisher_name: '',
-    publisher_num: '',
-    publisher_email: '',
+    type: "",
+    action: "",
+    size: "",
+    title: "",
+    city: "",
+    address: "",
+    description: "",
+    price: "",
+    bedroom: "",
+    bathroom: "",
+    publisher_name: "",
+    publisher_num: "",
+    publisher_email: "",
   });
 
   const [images, setImages] = useState([]);
   const [action, setAction] = useState(null);
   const [type, setType] = useState(null);
 
-  const handleChange = (event) => setFormData({ ...formData, [event.target.name]: event.target.value });
+  const handleChange = (event) =>
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   const handleButtonClick = (selectedAction) => setAction(selectedAction);
   const handleButtonclicktype = (selectedType) => setType(selectedType);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!action || !type) return alert('Select action and property type');
-    if (!images || images.length === 0) return alert('Upload at least 1 image');
+    if (!action || !type) return alert("Select action and property type");
+    if (!images || images.length === 0) return alert("Upload at least 1 image");
 
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => data.append(key, value));
-    data.append('action', action);
-    data.append('type', type);
-    for (let i = 0; i < images.length; i++) data.append('images', images[i]);
+    data.append("action", action);
+    data.append("type", type);
+    for (let i = 0; i < images.length; i++) data.append("images", images[i]);
 
     try {
       // await axios.post(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
-      await axios.post('https://real-estate-website-uvk2.onrender.com/submitForm',
-  data,
-  {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  }
-);
+      await axios.post(
+        "https://real-estate-website-uvk2.onrender.com/submitForm",
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
-      alert('Property uploaded successfully!');
+      alert("Property uploaded successfully!");
       setFormData({
-        type: '',
-        action: '',
-        size: '',
-        title: '',
-        city: '',
-        address: '',
-        description: '',
-        price: '',
-        bedroom: '',
-        bathroom: '',
-        publisher_name: '',
-        publisher_num: '',
-        publisher_email: '',
+        type: "",
+        action: "",
+        size: "",
+        title: "",
+        city: "",
+        address: "",
+        description: "",
+        price: "",
+        bedroom: "",
+        bathroom: "",
+        publisher_name: "",
+        publisher_num: "",
+        publisher_email: "",
       });
       setImages([]);
       setAction(null);
       setType(null);
     } catch (err) {
       console.error(err);
-      alert('Upload failed');
+      alert("Upload failed");
     }
   };
 
@@ -80,7 +88,9 @@ export default function InputForm() {
       {/* Hero Section */}
       <div className="flex flex-col md:flex-row items-center justify-center bg-red-500 rounded-xl text-white mb-10 p-6 relative">
         <div className="flex-1 text-center md:text-left">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Upload your property details</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            Upload your property details
+          </h2>
         </div>
         <img
           src={building}
@@ -93,19 +103,29 @@ export default function InputForm() {
       <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
         {/* Action Type */}
         <div>
-          <p className="text-lg font-semibold text-gray-700 mb-2">What do you want to do?</p>
+          <p className="text-lg font-semibold text-gray-700 mb-2">
+            What do you want to do?
+          </p>
           <div className="flex flex-wrap gap-4">
             <button
               type="button"
-              onClick={() => handleButtonClick('rent')}
-              className={`px-4 py-2 border rounded-lg font-semibold ${action === 'rent' ? 'border-orange-700 bg-orange-100' : 'border-gray-300'}`}
+              onClick={() => handleButtonClick("rent")}
+              className={`px-4 py-2 border rounded-lg font-semibold ${
+                action === "rent"
+                  ? "border-orange-700 bg-orange-100"
+                  : "border-gray-300"
+              }`}
             >
               <FontAwesomeIcon icon={faHome} className="mr-2" /> Rent
             </button>
             <button
               type="button"
-              onClick={() => handleButtonClick('sell')}
-              className={`px-4 py-2 border rounded-lg font-semibold ${action === 'sell' ? 'border-orange-700 bg-orange-100' : 'border-gray-300'}`}
+              onClick={() => handleButtonClick("sell")}
+              className={`px-4 py-2 border rounded-lg font-semibold ${
+                action === "sell"
+                  ? "border-orange-700 bg-orange-100"
+                  : "border-gray-300"
+              }`}
             >
               <FontAwesomeIcon icon={faDollarSign} className="mr-2" /> Sell
             </button>
@@ -114,26 +134,40 @@ export default function InputForm() {
 
         {/* Property Type */}
         <div>
-          <p className="text-lg font-semibold text-gray-700 mb-2">What kind of property do you have?</p>
+          <p className="text-lg font-semibold text-gray-700 mb-2">
+            What kind of property do you have?
+          </p>
           <div className="flex flex-wrap gap-4">
             <button
               type="button"
-              onClick={() => handleButtonclicktype('Residential')}
-              className={`px-4 py-2 border rounded-lg font-semibold ${type === 'Residential' ? 'border-orange-700 bg-orange-100' : 'border-gray-300'}`}
+              onClick={() => handleButtonclicktype("Residential")}
+              className={`px-4 py-2 border rounded-lg font-semibold ${
+                type === "Residential"
+                  ? "border-orange-700 bg-orange-100"
+                  : "border-gray-300"
+              }`}
             >
               <FontAwesomeIcon icon={faHome} className="mr-2" /> Residential
             </button>
             <button
               type="button"
-              onClick={() => handleButtonclicktype('Commercial')}
-              className={`px-4 py-2 border rounded-lg font-semibold ${type === 'Commercial' ? 'border-orange-700 bg-orange-100' : 'border-gray-300'}`}
+              onClick={() => handleButtonclicktype("Commercial")}
+              className={`px-4 py-2 border rounded-lg font-semibold ${
+                type === "Commercial"
+                  ? "border-orange-700 bg-orange-100"
+                  : "border-gray-300"
+              }`}
             >
               <FontAwesomeIcon icon={faBuilding} className="mr-2" /> Commercial
             </button>
             <button
               type="button"
-              onClick={() => handleButtonclicktype('Plot')}
-              className={`px-4 py-2 border rounded-lg font-semibold ${type === 'Plot' ? 'border-orange-700 bg-orange-100' : 'border-gray-300'}`}
+              onClick={() => handleButtonclicktype("Plot")}
+              className={`px-4 py-2 border rounded-lg font-semibold ${
+                type === "Plot"
+                  ? "border-orange-700 bg-orange-100"
+                  : "border-gray-300"
+              }`}
             >
               Plot
             </button>
@@ -217,7 +251,8 @@ export default function InputForm() {
             accept="image/*"
             multiple
             onChange={(e) => {
-              if (e.target.files.length > 4) return alert('Only 4 images allowed');
+              if (e.target.files.length > 4)
+                return alert("Only 4 images allowed");
               setImages(e.target.files);
             }}
           />
@@ -263,12 +298,6 @@ export default function InputForm() {
     </div>
   );
 }
-
-
-
-
-
-
 
 // import React, { useState } from "react";
 // import axios from "axios";

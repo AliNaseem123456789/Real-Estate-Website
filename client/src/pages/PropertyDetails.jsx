@@ -1,15 +1,21 @@
 // const response = await axios.get(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBed, faBath, faExpand, faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
-import Modal from 'react-modal';
-import ContactForm from './ContactForm';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBed,
+  faBath,
+  faExpand,
+  faEnvelope,
+  faPhone,
+} from "@fortawesome/free-solid-svg-icons";
+import Modal from "react-modal";
+import ContactForm from "./ContactForm";
 
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 
-export default function Complete() {
+export default function PropertyDetails() {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,11 +25,15 @@ export default function Complete() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await axios.get(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
-        const response = await axios.get(`http://localhost:3001/properties/${id}`);
+        const response = await axios.get(
+          `https://real-estate-website-uvk2.onrender.com/properties/${id}`
+        );
+        // const response = await axios.get(
+        //   `http://localhost:3001/properties/${id}`
+        // );
         setProperty(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
@@ -46,15 +56,17 @@ export default function Complete() {
     }
   };
 
-  const images = [loadImage(1), loadImage(2), loadImage(3), loadImage(4)].filter(
-    (img) => img !== null
-  );
+  const images = [
+    loadImage(1),
+    loadImage(2),
+    loadImage(3),
+    loadImage(4),
+  ].filter((img) => img !== null);
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-10">
-          
           {/* Left Section: Images */}
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -154,7 +166,7 @@ export default function Complete() {
         <h2 className="text-xl font-semibold mb-4">
           Call {property.publisher_name}
         </h2>
-        <p className="mb-6">Phone: {property.publisher_phone || 'N/A'}</p>
+        <p className="mb-6">Phone: {property.publisher_phone || "N/A"}</p>
         <button
           onClick={() => setMsgModal(false)}
           className="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
