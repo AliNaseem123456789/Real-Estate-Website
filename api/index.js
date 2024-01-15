@@ -9,11 +9,7 @@ import cors from "cors";
 dotenv.config();
 import PropertyModel from "./models/property.js";
 import upload from "./middelware/upload.js";
-// mongoose.connect(process.env.MONGO).then(() =>{
-//     console.log('connected to MongoDB');})
-//     .catch((err) =>{
-//         console.log(err);
-//    mongodb+srv://alinaseem20021021_db_user:<db_password>@cluster0.j16gmhw.mongodb.net/ });
+
 mongoose
   .connect(
     "mongodb+srv://alinaseem20021021_db_user:ali123456789@cluster0.j16gmhw.mongodb.net/mydatabase?retryWrites=true&w=majority",
