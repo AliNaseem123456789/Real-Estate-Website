@@ -21,7 +21,8 @@ export default function Complete() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/properties/${id}`);
+        // const response = await axios.get(`http://localhost:3001/properties/${id}`);
+        const response = await axios.get(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
         setProperty(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
