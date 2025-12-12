@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import p1 from "./p1.webp";
-import p2 from "./p2.webp";
-import p3 from "./p3.webp";
+import p1 from "../../src/assets/p1.webp";
+import p2 from "../../src/assets/p2.webp";
+import p3 from "../../src/assets/p3.webp";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBed, faBath, faExpand, faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
