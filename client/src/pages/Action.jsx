@@ -37,8 +37,8 @@ export default function Action() {
 
   const fetchData = () => {
     axios
-     // .get(`https://real-estate-website-uvk2.onrender.com/${currentEndpoint}`, { params: filters })
-      .get(`http://localhost:3001/${currentEndpoint}`, { params: filters })
+     .get(`https://real-estate-website-uvk2.onrender.com/${currentEndpoint}`, { params: filters })
+      // .get(`http://localhost:3001/${currentEndpoint}`, { params: filters })
       .then((res) => setProperties(res.data))
       .catch((err) => console.log(err));
   };
