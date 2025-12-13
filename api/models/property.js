@@ -54,6 +54,11 @@ const PropertySchema = new mongoose.Schema({
       type:String,
       required:true,
     },
+    image_prefix: {
+  type: String,
+  required: false
+}
+
   //   imageData: {
   //     type: Buffer,
   //     required: true, // Adjust as needed
