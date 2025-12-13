@@ -1,6 +1,7 @@
 // components/Hero.jsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import a from "../../assets/a.jpeg";
 
 const heroData = [
   {
@@ -9,7 +10,7 @@ const heroData = [
     subtitle: 'Profit builders provide a variety of homes.',
   },
   {
-    image: 'https://images.unsplash.com/photo-1560185127-6f6a992f0e37?&w=1600',
+    image: a,
     title: 'Luxury made simple',
     subtitle: 'Discover properties that fit your lifestyle.',
   },
@@ -37,7 +38,8 @@ export default function Hero() {
   }, []);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full min-h-[80vh] sm:h-screen overflow-hidden">
+      {/* Slides */}
       {heroData.map((slide, index) => (
         <div
           key={index}
@@ -50,18 +52,20 @@ export default function Hero() {
         ></div>
       ))}
 
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/40"></div>
 
-      <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4 text-white">
+      {/* Text */}
+      <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4 sm:px-6 md:px-10 text-white">
         <h1
-          className={`text-4xl sm:text-6xl font-bold mb-4 transition-opacity duration-1000 ${
+          className={`text-3xl sm:text-4xl md:text-6xl font-bold mb-4 transition-opacity duration-1000 ${
             showText ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-5'
           }`}
         >
           {heroData[current].title}
         </h1>
         <p
-          className={`mb-6 text-sm sm:text-base text-gray-200 transition-opacity duration-1000 delay-300 ${
+          className={`mb-6 text-sm sm:text-base md:text-lg text-gray-200 transition-opacity duration-1000 delay-300 ${
             showText ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-5'
           }`}
         >
@@ -69,7 +73,7 @@ export default function Hero() {
         </p>
         <Link
           to="/about"
-          className={`inline-block px-6 py-3 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition-opacity duration-1000 delay-500 ${
+          className={`inline-block px-5 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition-opacity duration-1000 delay-500 ${
             showText ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-5'
           }`}
         >
