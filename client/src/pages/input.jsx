@@ -43,8 +43,7 @@ export default function InputForm() {
 
     try {
       // await axios.post(`https://real-estate-website-uvk2.onrender.com/properties/${id}`);
-      await axios.post(
-  'https://real-estate-website-uvk2.onrender.com/submitForm',
+      await axios.post('https://real-estate-website-uvk2.onrender.com/submitForm',
   data,
   {
     headers: { 'Content-Type': 'multipart/form-data' },
