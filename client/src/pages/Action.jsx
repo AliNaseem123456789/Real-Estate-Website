@@ -71,138 +71,130 @@ export default function Action() {
     }
   };
 
-  return (
-    <div className="bg-gray-50 min-h-screen py-10">
-      <div className="max-w-6xl mx-auto px-4">
+return (
+  <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 py-12">
+    <div className="max-w-7xl mx-auto px-4">
 
-        {/* FILTERS */}
-        <div className="flex flex-wrap gap-4 mb-8">
-
-          <select
-            value={filters.action}
-            onChange={(e) => handleFilterChange("action", e.target.value)}
-            className="h-10 px-3 border rounded-lg bg-white text-gray-700 shadow-sm"
-          >
-            <option value="rent">Rent</option>
-            {/* <option value="buy">Buy</option> */}
-            <option value="sell">Buy</option>
-          </select>
-
-          <select
-            value={filters.type}
-            onChange={(e) => handleFilterChange("type", e.target.value)}
-            className="h-10 px-3 border rounded-lg bg-white text-gray-700 shadow-sm"
-          >
-            <option value="">Property Type</option>
-            <option value="commercial">Commercial</option>
-            <option value="residential">Residential</option>
-            <option value="plot">Plot</option>
-          </select>
-
-          <input
-            type="number"
-            placeholder="Price"
-            value={filters.price}
-            onChange={(e) => handleFilterChange("price", e.target.value)}
-            className="h-10 px-3 border rounded-lg shadow-sm text-gray-700"
-          />
-
-          <input
-            type="number"
-            placeholder="Bedrooms"
-            value={filters.bedroom}
-            onChange={(e) => handleFilterChange("bedroom", e.target.value)}
-            className="h-10 px-3 border rounded-lg shadow-sm text-gray-700"
-          />
-
-          <input
-            type="number"
-            placeholder="Bathrooms"
-            value={filters.bathroom}
-            onChange={(e) => handleFilterChange("bathroom", e.target.value)}
-            className="h-10 px-3 border rounded-lg shadow-sm text-gray-700"
-          />
-
-        </div>
-
-        {/* TITLE */}
-        <p className="text-xl font-semibold text-gray-700 mb-6">
-          {filters.type
-            ? `${filters.type.charAt(0).toUpperCase() + filters.type.slice(1)} Properties for ${
-                filters.action === "rent"
-                  ? "Rent"
-                  : filters.action === "buy"
-                  ? "Buy"
-                  : "Sale"
-              }`
-            : `Properties for ${
-                filters.action === "rent"
-                  ? "Rent"
-                  : filters.action === "buy"
-                  ? "Buy"
-                  : "Sale"
-              }`}
+      {/* HERO TITLE */}
+      <div className="mb-10 text-center">
+        <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">
+          Discover Premium Properties
+        </h1>
+        <p className="text-gray-500 mt-2">
+          Hand-picked listings tailored to your lifestyle
         </p>
+      </div>
 
-        {/* GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* FILTER BAR */}
+      <div className="backdrop-blur-md bg-white/70 border border-gray-200 rounded-2xl shadow-lg p-6 mb-10">
+        <div className="flex flex-wrap gap-4 justify-center">
 
-          {properties.map((prop) => (
-            <div
-              key={prop._id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition relative"
+          {[
+            {
+              value: filters.action,
+              onChange: (e) => handleFilterChange("action", e.target.value),
+              options: [
+                { v: "rent", l: "Rent" },
+                { v: "sell", l: "Buy" },
+              ],
+            },
+            {
+              value: filters.type,
+              onChange: (e) => handleFilterChange("type", e.target.value),
+              options: [
+                { v: "", l: "Property Type" },
+                { v: "commercial", l: "Commercial" },
+                { v: "residential", l: "Residential" },
+                { v: "plot", l: "Plot" },
+              ],
+            },
+          ].map((select, i) => (
+            <select
+              key={i}
+              value={select.value}
+              onChange={select.onChange}
+              className="px-4 py-2 rounded-xl border shadow-sm bg-white text-gray-700 focus:ring-2 focus:ring-red-500"
             >
-              <Link to={`/properties/${prop._id}`}>
+              {select.options.map((o) => (
+                <option key={o.v} value={o.v}>{o.l}</option>
+              ))}
+            </select>
+          ))}
 
-                {/* --- ONLY ONE IMAGE PER PROPERTY --- */}
-                <Slider {...sliderSettings} className="h-64">
-                  <div className="h-64 w-full overflow-hidden">
-                    <img
-                      src={getFirstImage(prop.image_prefix)}
-                      alt="Property"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </Slider>
-
-              </Link>
-
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-red-500 font-bold text-lg">
-                    PKR {prop.price}
-                  </span>
-
-                  <button onClick={() => handleLikeClick(prop._id)}>
-                    <FaHeart
-                      className={`text-xl transition-colors ${
-                        liked[prop._id] ? "text-red-500" : "text-gray-400"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center text-gray-600 text-sm gap-4 mb-2">
-                  <div className="flex items-center gap-1">
-                    <FaBed /> {prop.bedroom}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FaBath /> {prop.bathroom}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FontAwesomeIcon icon={faExpand} /> {prop.size} sqft
-                  </div>
-                </div>
-
-                <p className="text-gray-700 text-sm line-clamp-3">
-                  {prop.description}
-                </p>
-              </div>
-            </div>
+          {["price", "bedroom", "bathroom"].map((field) => (
+            <input
+              key={field}
+              type="number"
+              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              value={filters[field]}
+              onChange={(e) => handleFilterChange(field, e.target.value)}
+              className="px-4 py-2 rounded-xl border shadow-sm focus:ring-2 focus:ring-red-500"
+            />
           ))}
 
         </div>
       </div>
+
+      {/* PROPERTY GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        {properties.map((prop) => (
+          <div
+            key={prop._id}
+            className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500"
+          >
+            {/* IMAGE */}
+            <div className="relative h-64 overflow-hidden">
+              <Link to={`/properties/${prop._id}`}>
+                <img
+                  src={getFirstImage(prop.image_prefix)}
+                  className="h-full w-full object-cover transform group-hover:scale-110 transition duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              </Link>
+
+              {/* LIKE */}
+              <button
+                onClick={() => handleLikeClick(prop._id)}
+                className="absolute top-4 right-4 bg-white/90 p-2 rounded-full shadow"
+              >
+                <FaHeart
+                  className={`text-lg ${
+                    liked[prop._id] ? "text-red-500" : "text-gray-400"
+                  }`}
+                />
+              </button>
+
+              {/* PRICE BADGE */}
+              <span className="absolute bottom-4 left-4 bg-red-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow">
+                PKR {prop.price}
+              </span>
+            </div>
+
+            {/* CONTENT */}
+            <div className="p-5">
+              <div className="flex gap-4 text-gray-600 text-sm mb-3">
+                <span className="flex items-center gap-1"><FaBed /> {prop.bedroom}</span>
+                <span className="flex items-center gap-1"><FaBath /> {prop.bathroom}</span>
+                <span className="flex items-center gap-1"><FontAwesomeIcon icon={faExpand} /> {prop.size} sqft</span>
+              </div>
+
+              <p className="text-gray-700 text-sm leading-relaxed line-clamp-3">
+                {prop.description}
+              </p>
+
+              <Link
+                to={`/properties/${prop._id}`}
+                className="inline-block mt-4 text-red-600 font-semibold hover:underline"
+              >
+                View Details →
+              </Link>
+            </div>
+          </div>
+        ))}
+
+      </div>
     </div>
-  );
+  </div>
+);
 }
