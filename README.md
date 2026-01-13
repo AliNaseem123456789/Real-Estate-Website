@@ -100,30 +100,36 @@ npm install
 
 ### Environment Variables Setup
 
-Create a .env file in both the client and api directories.
+- Create a .env file in both the client and api directories.
 
-Backend .env
+## Backend .env
+```bash
 PORT=5000
 DB_URI=your_database_connection_string
 JWT_SECRET=your_jwt_secret
+```
 
-Frontend .env
+## Frontend .env
+```bash
 VITE_API_BASE_URL=your_backend_url
+```
 
 ### Run the Application
-Start Backend Server
+## Start Backend Server
+```bash
 npm run dev
-
+```
 ### Start Frontend Application
+```bash
 npm run dev
-
+```
 
 The application will be available at:
 
 http://localhost:5173
 
-###API Endpoints (Example)
-Endpoint	Method	Description
+### API Endpoints (Example)
+## Endpoint	Method	Description
 /api/auth/signup	POST	Register a new user
 /api/auth/signin	POST	Authenticate a user
 /api/properties	GET	Fetch all properties
@@ -138,19 +144,19 @@ Contributions are welcome and appreciated.
 Fork the repository
 
 Create a new feature branch
-
+```bash
 git checkout -b feature/your-feature
-
+```
 
 Commit your changes
-
+```bash
 git commit -m "Add your feature"
-
+```
 
 Push to the branch
-
+```bash
 git push origin feature/your-feature
-
+```
 
 Open a Pull Request
 
