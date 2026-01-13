@@ -123,11 +123,11 @@ npm run dev
 ```bash
 npm run dev
 ```
-# The application will be available at:
+### The application will be available at:
 
 http://localhost:5173
 
-## 4.API Endpoints (Example)
+### 4.API Endpoints (Example)
 ### Endpoint	Method	Description
 - /api/auth/signup	POST	Register a new user
 - /api/auth/signin	POST	Authenticate a user
