@@ -92,13 +92,13 @@ cd Real-Estate-Website
 cd client
 npm install
 ```
-Backend Setup
+### Backend Setup
 ```bash
 cd ../api
 npm install
 ```
 
-Environment Variables Setup
+### Environment Variables Setup
 
 Create a .env file in both the client and api directories.
 
@@ -110,11 +110,11 @@ JWT_SECRET=your_jwt_secret
 Frontend .env
 VITE_API_BASE_URL=your_backend_url
 
-Run the Application
+### Run the Application
 Start Backend Server
 npm run dev
 
-Start Frontend Application
+### Start Frontend Application
 npm run dev
 
 
@@ -122,7 +122,7 @@ The application will be available at:
 
 http://localhost:5173
 
-API Endpoints (Example)
+###API Endpoints (Example)
 Endpoint	Method	Description
 /api/auth/signup	POST	Register a new user
 /api/auth/signin	POST	Authenticate a user
