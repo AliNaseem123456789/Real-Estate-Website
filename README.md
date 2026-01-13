@@ -85,7 +85,7 @@ git clone https://github.com/AliNaseem123456789/Real-Estate-Website.git
 cd Real-Estate-Website
 ```
 
-## Install Dependencies
+### 2. Install Dependencies
 
 ### Frontend Setup
 ```bash
@@ -98,7 +98,7 @@ cd ../api
 npm install
 ```
 
-## Environment Variables Setup
+### Environment Variables Setup
 
 - Create a .env file in both the client and api directories.
 
@@ -114,7 +114,7 @@ JWT_SECRET=your_jwt_secret
 VITE_API_BASE_URL=your_backend_url
 ```
 
-## Run the Application
+### 3. Run the Application
 ### Start Backend Server
 ```bash
 npm run dev
@@ -127,7 +127,7 @@ npm run dev
 
 http://localhost:5173
 
-## API Endpoints (Example)
+## 4.API Endpoints (Example)
 ### Endpoint	Method	Description
 - /api/auth/signup	POST	Register a new user
 - /api/auth/signin	POST	Authenticate a user
@@ -140,26 +140,26 @@ Update this section based on your actual API implementation.
 
 ### Contributions are welcome and appreciated.
 
-## Fork the repository
+## 1. Fork the repository
 
-### Create a new feature branch
+### 2. Create a new feature branch
 ```bash
 git checkout -b feature/your-feature
 ```
 
-### Commit your changes
+### 3. Commit your changes
 ```bash
 git commit -m "Add your feature"
 ```
 
-### Push to the branch
+### 4. Push to the branch
 ```bash
 git push origin feature/your-feature
 ```
 
-### Open a Pull Request
+### 5. Open a Pull Request
 
-###Author
+### Author
 
 - Ali Naseem
 - GitHub: https://github.com/AliNaseem123456789
