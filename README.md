@@ -49,7 +49,7 @@ Real-Estate-Website/
 ├── .gitignore
 ├── package.json
 └── README.md
-
+---
 ## Tech Stack
 
 ### Frontend
