@@ -35,8 +35,6 @@ A full-stack web application for managing, uploading, and browsing real estate p
 
 ## Architecture and Folder Structure
 
-This project follows a feature-based architecture with a clear separation of concerns.
-
 ```bash
 Real-Estate-Website/
 ├── api/                        # Backend: Node.js & Express server logic
