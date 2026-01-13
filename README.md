@@ -6,7 +6,7 @@ A full-stack web application for managing, uploading, and browsing real estate p
 
 ## Live Demo
 
-Add your deployed URL here (Render, Vercel, Netlify, etc.)
+- Netflify Link: https://realestatewebsite2.netlify.app/
 
 ---
 
@@ -39,16 +39,24 @@ This project follows a feature-based architecture with a clear separation of con
 
 ```bash
 Real-Estate-Website/
-├── api/                     # Backend API handlers
-├── client/                  # Frontend React application
+├── api/                        # Backend: Node.js & Express server logic
+│   ├── controllers/            # Business logic (handling requests/responses)
+│   ├── models/                 # Mongoose schemas (User, Property)
+│   ├── routes/                 # API endpoint definitions (authRoutes, propertyRoutes)
+│   ├── middleware/             # Request interceptors (verifyToken, error handler)
+│   ├── utils/                  # Helper functions (error generator, validation)
+│   └── index.js                # Server entry point
+├── client/                     # Frontend: React.js application
 │   ├── src/
-│   │   ├── features/        # Feature-based logic (auth, properties, etc.)
-│   │   ├── shared/          # Reusable UI components
-│   │   ├── redux/           # Redux slices and store
-│   │   └── utils/           # Utility functions and services
-├── .gitignore
-├── package.json
-└── README.md
+│   │   ├── assets/             # Static files (images, icons, fonts)
+│   │   ├── components/         # Reusable UI pieces (Header, Footer, PrivateRoute)
+│   │   ├── pages/              # Main application views (Home, Profile, Search)
+│   │   ├── redux/              # Global state management (slices, store)
+│   │   ├── firebase.js         # Firebase/OAuth configuration
+│   │   └── App.jsx             # Main router and component tree
+├── .gitignore                  # Files to exclude from Git (node_modules, .env)
+├── package.json                # Project dependencies and scripts
+└── README.md                   # Project documentation
 ```
 ## Tech Stack
 
@@ -63,11 +71,10 @@ Real-Estate-Website/
 - Node.js
 - Express.js
 - REST APIs
-- Database (MongoDB or SQL)
+- MongoDB
 
 ### Deployment
 - Render
-- Vercel
 - Netlify
 
 ---
@@ -127,7 +134,7 @@ npm run dev
 
 http://localhost:5173
 
-### 4.API Endpoints (Example)
+### 4. API Endpoints (Example)
 ### Endpoint	Method	Description
 - /api/auth/signup	POST	Register a new user
 - /api/auth/signin	POST	Authenticate a user
@@ -138,7 +145,7 @@ Update this section based on your actual API implementation.
 
 # Contributing
 
-### Contributions are welcome and appreciated.
+Contributions are welcome and appreciated.
 
 ## 1. Fork the repository
 
@@ -163,13 +170,9 @@ git push origin feature/your-feature
 
 - Ali Naseem
 - GitHub: https://github.com/AliNaseem123456789
-
-Portfolio: Add link here (optional)
+-Portfolio: https://portfolio-iota-plum-69.vercel.app/
 
 If you find this project useful, consider giving it a star.
 
 
 ---
-
-This is now **100% valid Markdown**, clean, professional, and GitHub-ready.  
-If you want the **entire README merged into one final version**, say the word and I’ll do it cleanly.
