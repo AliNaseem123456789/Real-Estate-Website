@@ -98,24 +98,24 @@ cd ../api
 npm install
 ```
 
-### Environment Variables Setup
+## Environment Variables Setup
 
 - Create a .env file in both the client and api directories.
 
-## Backend .env
+### Backend .env
 ```bash
 PORT=5000
 DB_URI=your_database_connection_string
 JWT_SECRET=your_jwt_secret
 ```
 
-## Frontend .env
+### Frontend .env
 ```bash
 VITE_API_BASE_URL=your_backend_url
 ```
 
-### Run the Application
-## Start Backend Server
+## Run the Application
+### Start Backend Server
 ```bash
 npm run dev
 ```
@@ -123,13 +123,12 @@ npm run dev
 ```bash
 npm run dev
 ```
-
-The application will be available at:
+# The application will be available at:
 
 http://localhost:5173
 
-### API Endpoints (Example)
-## Endpoint	Method	Description
+## API Endpoints (Example)
+### Endpoint	Method	Description
 /api/auth/signup	POST	Register a new user
 /api/auth/signin	POST	Authenticate a user
 /api/properties	GET	Fetch all properties
