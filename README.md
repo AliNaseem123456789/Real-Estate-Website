@@ -49,3 +49,37 @@ Real-Estate-Website/
 ├── .gitignore
 ├── package.json
 └── README.md
+
+## Tech Stack
+
+### Frontend
+- React
+- React Router DOM
+- Redux Toolkit
+- Tailwind CSS
+- React Icons
+
+### Backend
+- Node.js
+- Express.js
+- REST APIs
+- Database (MongoDB or SQL)
+
+### Deployment
+- Render
+- Vercel
+- Netlify
+
+---
+
+## Getting Started
+
+Follow the steps below to run the project locally.
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/AliNaseem123456789/Real-Estate-Website.git
+cd Real-Estate-Website
