@@ -83,3 +83,90 @@ Follow the steps below to run the project locally.
 ```bash
 git clone https://github.com/AliNaseem123456789/Real-Estate-Website.git
 cd Real-Estate-Website
+
+
+## Install Dependencies
+
+### Frontend Setup
+```bash
+cd client
+npm install
+
+Backend Setup
+cd ../api
+npm install
+
+Environment Variables Setup
+
+Create a .env file in both the client and api directories.
+
+Backend .env
+PORT=5000
+DB_URI=your_database_connection_string
+JWT_SECRET=your_jwt_secret
+
+Frontend .env
+VITE_API_BASE_URL=your_backend_url
+
+Run the Application
+Start Backend Server
+npm run dev
+
+Start Frontend Application
+npm run dev
+
+
+The application will be available at:
+
+http://localhost:5173
+
+API Endpoints (Example)
+Endpoint	Method	Description
+/api/auth/signup	POST	Register a new user
+/api/auth/signin	POST	Authenticate a user
+/api/properties	GET	Fetch all properties
+/api/properties	POST	Create a new property
+
+Update this section based on your actual API implementation.
+
+Contributing
+
+Contributions are welcome and appreciated.
+
+Fork the repository
+
+Create a new feature branch
+
+git checkout -b feature/your-feature
+
+
+Commit your changes
+
+git commit -m "Add your feature"
+
+
+Push to the branch
+
+git push origin feature/your-feature
+
+
+Open a Pull Request
+
+License
+
+This project is licensed under the MIT License.
+
+Author
+
+Ali Naseem
+GitHub: https://github.com/AliNaseem123456789
+
+Portfolio: Add link here (optional)
+
+If you find this project useful, consider giving it a star.
+
+
+---
+
+This is now **100% valid Markdown**, clean, professional, and GitHub-ready.  
+If you want the **entire README merged into one final version**, say the word and I’ll do it cleanly.
