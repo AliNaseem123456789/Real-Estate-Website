@@ -83,7 +83,7 @@ Follow the steps below to run the project locally.
 ```bash
 git clone https://github.com/AliNaseem123456789/Real-Estate-Website.git
 cd Real-Estate-Website
-
+```
 
 ## Install Dependencies
 
@@ -91,10 +91,12 @@ cd Real-Estate-Website
 ```bash
 cd client
 npm install
-
+```
 Backend Setup
+```bash
 cd ../api
 npm install
+```
 
 Environment Variables Setup
 
