@@ -129,44 +129,40 @@ http://localhost:5173
 
 ## API Endpoints (Example)
 ### Endpoint	Method	Description
-/api/auth/signup	POST	Register a new user
-/api/auth/signin	POST	Authenticate a user
-/api/properties	GET	Fetch all properties
-/api/properties	POST	Create a new property
+- /api/auth/signup	POST	Register a new user
+- /api/auth/signin	POST	Authenticate a user
+- /api/properties	GET	Fetch all properties
+- /api/properties	POST	Create a new property
 
 Update this section based on your actual API implementation.
 
-Contributing
+# Contributing
 
-Contributions are welcome and appreciated.
+### Contributions are welcome and appreciated.
 
-Fork the repository
+## Fork the repository
 
-Create a new feature branch
+### Create a new feature branch
 ```bash
 git checkout -b feature/your-feature
 ```
 
-Commit your changes
+### Commit your changes
 ```bash
 git commit -m "Add your feature"
 ```
 
-Push to the branch
+### Push to the branch
 ```bash
 git push origin feature/your-feature
 ```
 
-Open a Pull Request
+### Open a Pull Request
 
-License
+###Author
 
-This project is licensed under the MIT License.
-
-Author
-
-Ali Naseem
-GitHub: https://github.com/AliNaseem123456789
+- Ali Naseem
+- GitHub: https://github.com/AliNaseem123456789
 
 Portfolio: Add link here (optional)
 
