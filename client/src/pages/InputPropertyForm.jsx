@@ -55,7 +55,7 @@ export default function InputForm() {
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
 
       alert("Property uploaded successfully!");

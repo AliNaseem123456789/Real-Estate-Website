@@ -11,6 +11,7 @@ import InputForm from "./pages/InputPropertyForm";
 import PropertyDetails from "./pages/PropertyDetails";
 import PropertiesPage from "./pages/PropertiesPage";
 import Footer from "../src/components/Landing/Footer";
+import FloatingChat from "./components/FloatingChatbot";
 export default function App() {
   return (
     <BrowserRouter>
@@ -30,6 +31,13 @@ export default function App() {
         </Route>
       </Routes>
       <Footer />
+      <FloatingChat
+        botId="realestate" // Changed to realestate for property website
+        apiUrl={"https://chatbot-gateway.onrender.com"}
+        title="HomeMate Assistant 🏠"
+        welcomeMessage="Hello! Looking for properties to buy, sell, or rent? I'm here to help you find your dream home! ✨"
+        primaryColor="#10B981" // Green color for real estate
+      />
     </BrowserRouter>
   );
 }

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import OAuth from '../components/OAuth';
-import { FaGoogle } from 'react-icons/fa';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import OAuth from "../components/OAuth";
+import { FaGoogle } from "react-icons/fa";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -17,11 +17,14 @@ export default function SignUp() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch('https://real-estate-website-uvk2.onrender.com/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://real-estate-website-uvk2.onrender.com/api/auth/signup",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+      );
       const data = await res.json();
       if (data.success === false) {
         setError(data.message);
@@ -30,7 +33,7 @@ export default function SignUp() {
       }
       setLoading(false);
       setError(null);
-      navigate('/sign-in');
+      navigate("/sign-in");
     } catch (err) {
       setLoading(false);
       setError(err.message);
@@ -38,9 +41,9 @@ export default function SignUp() {
   };
 
   const animatedLines = [
-    'Join Us Today!',
-    'Build Your Property Profile',
-    'Start Managing Smarter',
+    "Join Us Today!",
+    "Build Your Property Profile",
+    "Start Managing Smarter",
   ];
 
   const [currentLine, setCurrentLine] = useState(0);
@@ -54,7 +57,6 @@ export default function SignUp() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
-
       {/* Left Animated Section */}
       <div className="hidden lg:flex w-1/2 bg-gray-900 items-center justify-center relative overflow-hidden p-12">
         <div className="text-center">
@@ -63,8 +65,8 @@ export default function SignUp() {
               key={index}
               className={`text-5xl font-extrabold text-white mb-6 transition-all duration-1000 ${
                 index === currentLine
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 -translate-y-5 absolute'
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-5 absolute"
               }`}
             >
               {line}
@@ -85,7 +87,6 @@ export default function SignUp() {
           </h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
             {/* Username */}
             <div>
               <label className="text-gray-700 font-medium mb-1 block">
@@ -130,7 +131,7 @@ export default function SignUp() {
               disabled={loading}
               className="bg-white text-red-600 font-semibold py-3 rounded-xl shadow-md border border-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 disabled:opacity-70"
             >
-              {loading ? 'Loading...' : 'Sign Up'}
+              {loading ? "Loading..." : "Sign Up"}
             </button>
           </form>
 
@@ -151,7 +152,7 @@ export default function SignUp() {
 
           <div className="text-center text-gray-600 mt-4">
             <p>
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link to="/sign-in" className="text-red-600 hover:underline">
                 Sign in
               </Link>

@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { FaHome, FaShoppingCart, FaStore, FaTag, FaInfoCircle, FaUser, FaBars, FaTimes } from "react-icons/fa";
+import {
+  FaHome,
+  FaShoppingCart,
+  FaStore,
+  FaTag,
+  FaInfoCircle,
+  FaUser,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -57,12 +66,16 @@ export default function Header() {
               </Link>
             ))}
           </ul>
-          
+
           {/* Desktop Profile / Sign-in */}
           <div className="hidden sm:flex items-center gap-2">
             <Link to="/profile">
               {currentUser ? (
-                <img className="rounded-full h-7 w-7 object-cover" src={currentUser.avatar} alt="profile" />
+                <img
+                  className="rounded-full h-7 w-7 object-cover"
+                  src={currentUser.avatar}
+                  alt="profile"
+                />
               ) : (
                 <div className="flex items-center text-slate-100 hover:underline gap-1">
                   <FaUser /> Sign in
@@ -79,14 +92,12 @@ export default function Header() {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Close button inside sidebar */}
         <button
           className="text-white text-2xl self-end mb-4"
           onClick={() => setSidebarOpen(false)}
         >
           <FaTimes />
         </button>
-
         <div className="flex flex-col gap-6 mt-4">
           <Link to="/" onClick={() => setSidebarOpen(false)}>
             <div className="flex flex-col items-center gap-1">
@@ -99,11 +110,14 @@ export default function Header() {
             </div>
           </Link>
         </div>
-
         <Link to="/profile" onClick={() => setSidebarOpen(false)}>
           <div className="flex flex-col items-center gap-1">
             {currentUser ? (
-              <img className="rounded-full h-7 w-7 object-cover" src={currentUser.avatar} alt="profile" />
+              <img
+                className="rounded-full h-7 w-7 object-cover"
+                src={currentUser.avatar}
+                alt="profile"
+              />
             ) : (
               <div className="flex flex-col items-center gap-1">
                 <FaUser /> Sign in

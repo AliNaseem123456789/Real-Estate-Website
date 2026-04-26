@@ -25,12 +25,12 @@ export default function PropertyDetails() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `https://real-estate-website-uvk2.onrender.com/properties/${id}`
-        );
         // const response = await axios.get(
-        //   `http://localhost:3001/properties/${id}`
+        //   `https://real-estate-website-uvk2.onrender.com/properties/${id}`
         // );
+        const response = await axios.get(
+          `https://real-estate-website-uvk2.onrender.com/properties/${id}`,
+        );
         setProperty(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -49,7 +49,7 @@ export default function PropertyDetails() {
     try {
       return new URL(
         `/src/assets/properties/${prefix}-${n}.jpeg`,
-        import.meta.url
+        import.meta.url,
       ).href;
     } catch (err) {
       return null;

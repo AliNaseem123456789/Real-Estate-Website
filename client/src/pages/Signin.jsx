@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
-import { FaGoogle } from 'react-icons/fa';
-import OAuth from '../components/OAuth';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { FaGoogle } from "react-icons/fa";
+import OAuth from "../components/OAuth";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -19,18 +23,26 @@ export default function SignIn() {
     e.preventDefault();
     try {
       dispatch(signInStart());
-      const res = await fetch('https://real-estate-website-uvk2.onrender.com/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://real-estate-website-uvk2.onrender.com/api/auth/signin",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+      );
+      // const res = await fetch("http://localhost:3001/api/auth/signin", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formData),
+      // });
       const data = await res.json();
       if (data.success === false) {
         dispatch(signInFailure(data.message));
         return;
       }
       dispatch(signInSuccess(data));
-      navigate('/');
+      navigate("/");
     } catch (err) {
       dispatch(signInFailure(err.message));
     }
@@ -39,7 +51,7 @@ export default function SignIn() {
   const animatedLines = [
     "Welcome Back!",
     "Your Property Hub",
-    "Connect & Manage Easily"
+    "Connect & Manage Easily",
   ];
 
   const [currentLine, setCurrentLine] = useState(0);
@@ -59,7 +71,6 @@ export default function SignIn() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
-      
       {/* Left Animated Section */}
       <div className="hidden lg:flex w-1/2 bg-gray-900 items-center justify-center relative overflow-hidden p-12">
         <div className="text-center">
@@ -68,8 +79,8 @@ export default function SignIn() {
               key={index}
               className={`text-5xl font-extrabold text-white mb-6 transition-all duration-1000 ${
                 index === currentLine
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 -translate-y-5 absolute'
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-5 absolute"
               }`}
             >
               {line}
@@ -85,12 +96,17 @@ export default function SignIn() {
       {/* Right Form Section */}
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-gray-50">
         <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 space-y-6 animate-fadeIn">
-          <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">Sign In</h2>
+          <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+            Sign In
+          </h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Email input */}
             <div>
-              <label htmlFor="email" className="text-gray-700 font-medium mb-1 block">
+              <label
+                htmlFor="email"
+                className="text-gray-700 font-medium mb-1 block"
+              >
                 Email
               </label>
               <input
@@ -103,7 +119,10 @@ export default function SignIn() {
 
             {/* Password input */}
             <div>
-              <label htmlFor="password" className="text-gray-700 font-medium mb-1 block">
+              <label
+                htmlFor="password"
+                className="text-gray-700 font-medium mb-1 block"
+              >
                 Password
               </label>
               <input
@@ -119,7 +138,7 @@ export default function SignIn() {
               disabled={loading}
               className="bg-white text-red-600 font-semibold py-3 rounded-xl shadow-md border border-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 disabled:opacity-70"
             >
-              {loading ? 'Loading...' : 'Sign In'}
+              {loading ? "Loading..." : "Sign In"}
             </button>
           </form>
 
@@ -140,7 +159,7 @@ export default function SignIn() {
 
           <div className="text-center text-gray-600 mt-4">
             <p>
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <Link to="/sign-up" className="text-red-600 hover:underline">
                 Sign up
               </Link>
