@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 const FloatingChat = ({
   botId = "ecommerce",
-  apiUrl = "https://https://chatbot-gateway-production-bd16.up.railway.app/",
+    apiUrl = "https://https://chatbot-gateway-production-bd16.up.railway.app",
   title = "AI Assistant",
   welcomeMessage = "Hello! How can I help you today?",
   primaryColor = "#3B82F6",
