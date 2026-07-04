@@ -33,7 +33,8 @@ export default function App() {
       <Footer />
       <FloatingChat
         botId="realestate" // Changed to realestate for property website
-        apiUrl={"https://chatbot-gateway.onrender.com"}
+        apiUrl={"https://https://chatbot-gateway-production-bd16.up.railway.app"}
+        
         title="HomeMate Assistant 🏠"
         welcomeMessage="Hello! Looking for properties to buy, sell, or rent? I'm here to help you find your dream home! ✨"
         primaryColor="#10B981" // Green color for real estate
