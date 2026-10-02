@@ -1,4 +1,3 @@
-// components/Stats.jsx
 const stats = [
   { label: 'Properties Listed', value: '1,200+' },
   { label: 'Happy Clients', value: '3,500+' },

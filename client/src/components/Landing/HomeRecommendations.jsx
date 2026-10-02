@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import { FaDollarSign, FaMapMarkerAlt } from "react-icons/fa"; // icons for tags
 import img1 from "../../assets/Home1.jpeg";
 import img2 from "../../assets/Home2.jpeg";
@@ -38,9 +38,12 @@ export default function HomeRecommendations() {
           <p className="text-gray-600 mb-6">
             Sign in for a more personalized experience and see homes that match your preferences and budget.
           </p>
-          <button className="px-6 py-3 rounded-full border border-blue-500 text-blue-600 font-medium hover:bg-blue-50">
+          <Link
+            to="/sign-in"
+            className="inline-block px-6 py-3 rounded-full border border-blue-500 text-blue-600 font-medium hover:bg-blue-50"
+          >
             Sign in
-          </button>
+          </Link>
         </div>
 
         {/* RIGHT SIDE STACKED CARDS */}

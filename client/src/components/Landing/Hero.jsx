@@ -1,4 +1,3 @@
-// components/Hero.jsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import a from "../../assets/a.jpeg";
@@ -72,12 +71,12 @@ export default function Hero() {
           {heroData[current].subtitle}
         </p>
         <Link
-          to="/about"
+          to="/properties"
           className={`inline-block px-5 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition-opacity duration-1000 delay-500 ${
             showText ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-5'
           }`}
         >
-          Let's find...
+          Browse properties
         </Link>
       </div>
     </div>

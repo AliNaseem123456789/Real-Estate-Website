@@ -1,4 +1,3 @@
-// components/Testimonials.jsx
 const testimonials = [
   {
     name: 'John Doe',

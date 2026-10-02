@@ -1,9 +1,23 @@
-@import 'slick-carousel/slick/slick.css';
-@import 'slick-carousel/slick/slick-theme.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body{
-    background-color: rgb(241, 244, 245);
+body {
+  background-color: rgb(241, 244, 245);
+}
+
+/* Urdu font when the language toggle is set to Urdu */
+html[lang="ur"] body {
+  font-family: "Noto Nastaliq Urdu", serif;
+  line-height: 2;
+}
+
+/* Price map: grey background map so the blue price circles are easy to read */
+.market-map .leaflet-tile-pane {
+  filter: grayscale(100%) brightness(1.08) contrast(0.85);
+}
+
+/* Keep map tiles below the header, menus and pop-ups */
+.leaflet-container {
+  z-index: 0;
 }

@@ -1,60 +1,90 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Signin from "./pages/Signin";
-import Signup from "./pages/Signup";
-import About from "./pages/About";
-import Profile from "./pages/Profile";
+import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header";
-import PrivateRoute from "./components/PrivateRoute";
-import CreateListing from "./pages/Createlisting";
-import InputForm from "./pages/InputPropertyForm";
+import Footer from "./components/Landing/Footer";
+import FloatingChat from "./components/FloatingChat";
+import CompareBar from "./components/CompareBar";
+import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
+import Home from "./pages/Home";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Profile from "./pages/Profile";
+import Properties from "./pages/Properties";
 import PropertyDetails from "./pages/PropertyDetails";
-import PropertiesPage from "./pages/PropertiesPage";
-import Footer from "../src/components/Landing/Footer";
-import FloatingChat from "./components/FloatingChatbot";
+import SellProperty from "./pages/SellProperty";
+import EditProperty from "./pages/EditProperty";
+import Dashboard from "./pages/Dashboard";
+import Favorites from "./pages/Favorites";
+import Compare from "./pages/Compare";
+import Tools from "./pages/Tools";
+import AgentProfile from "./pages/AgentProfile";
+import Admin from "./pages/Admin";
+import MarketMap from "./pages/MarketMap";
+import NotFound from "./pages/NotFound";
+import { api } from "./utils/api";
+import { signOutUserSuccess, updateUserSuccess } from "./redux/user/userSlice";
+
 export default function App() {
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  // On page load, refresh the signed-in user from the server
+  // (favourites, admin role...). If the login has expired, sign out.
+  const userId = currentUser?._id;
+  useEffect(() => {
+    if (!userId) return;
+    api("/user/me")
+      .then((user) => dispatch(updateUserSuccess(user)))
+      .catch((error) => {
+        if (error.status === 401 || error.status === 403) dispatch(signOutUserSuccess());
+      });
+  }, [userId, dispatch]);
+
   return (
     <BrowserRouter>
       <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/sign-in" element={<Signin />} />
-        <Route path="/sign-up" element={<Signup />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/actions" element={<PropertiesPage />} />
-        <Route path="/input" element={<InputForm />} />
-        <Route path="/properties/:id" element={<PropertyDetails />} />
+      {/* bottom padding leaves room for the mobile bottom bar */}
+      <div className="pb-16 md:pb-0">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/tools" element={<Tools />} />
+          <Route path="/market" element={<MarketMap />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/properties/:id" element={<PropertyDetails />} />
+          <Route path="/agents/:id" element={<AgentProfile />} />
 
-        <Route element={<PrivateRoute />}>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/create-listing" element={<CreateListing />} />
-        </Route>
-      </Routes>
-      <Footer />
+          {/* Pages that need the user to be signed in */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/sell" element={<SellProperty />} />
+            <Route path="/properties/:id/edit" element={<EditProperty />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<Admin />} />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Footer />
+      </div>
+      <CompareBar />
       <FloatingChat
-        botId="realestate" // Changed to realestate for property website
-        apiUrl={"https://chatbot-gateway-production-bd16.up.railway.app"}
-        
+        botId="realestate"
         title="HomeMate Assistant 🏠"
-        welcomeMessage="Hello! Looking for properties to buy, sell, or rent? I'm here to help you find your dream home! ✨"
-        primaryColor="#10B981" // Green color for real estate
+        welcomeMessage="Hello! Looking for properties to buy, sell, or rent? Try: “3 bed house for rent in Lahore under 1 lakh” ✨"
+        primaryColor="#10B981"
+        userId={currentUser?._id}
       />
     </BrowserRouter>
   );
 }
-
-// const mongoose = require('mongoose');
-// const uri = "mongodb+srv://alinaseem20021021_db_user:<db_password>@cluster0.j16gmhw.mongodb.net/?appName=Cluster0";
-// const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
-// async function run() {
-//   try {
-//     // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
-//     await mongoose.connect(uri, clientOptions);
-//     await mongoose.connection.db.admin().command({ ping: 1 });
-//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     await mongoose.disconnect();
-//   }
-// }
-// run().catch(console.dir);

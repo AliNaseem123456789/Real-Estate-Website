@@ -1,4 +1,3 @@
-import React from "react";
 import buying from "../../assets/features1.jpeg";
 import renting from "../../assets/features2.jpeg";
 import selling from "../../assets/features3.jpeg";
@@ -14,7 +13,7 @@ export default function Features() {
         "A real estate agent can provide you with a clear breakdown of costs so that you can avoid surprise expenses.",
       button: "Find a local agent",
       image: buying,
-      action: "sell",
+      action: "buy",
     },
     {
       title: "Rent a home",
@@ -30,17 +29,16 @@ export default function Features() {
         "No matter what path you take to sell your home, we can help you navigate a successful sale.",
       button: "See your options",
       image: selling,
-      action: "input",
+      action: "sell",
     },
   ];
 
-const handleCardClick = (actionType) => {
-  if (actionType === "input") {
-    navigate("/input");
-  } else {
-    navigate(`/actions?action=${actionType}`);
-  }
-};
+  // "sell" listings are the ones a visitor can buy
+  const cardLinks = {
+    buy: "/properties?action=sell",
+    rent: "/properties?action=rent",
+    sell: "/sell",
+  };
 
   return (
     <div className="w-full flex justify-center py-12 bg-white">
@@ -49,7 +47,7 @@ const handleCardClick = (actionType) => {
           <div
             key={index}
             className="rounded-2xl shadow-md p-6 text-center border border-gray-200 bg-white cursor-pointer hover:shadow-lg transition"
-            onClick={() => handleCardClick(card.action)}
+            onClick={() => navigate(cardLinks[card.action])}
           >
             <div className="w-full flex justify-center mb-6">
               <img

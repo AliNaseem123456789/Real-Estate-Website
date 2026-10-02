@@ -58,6 +58,13 @@ const userSlice = createSlice({
             state.error = action.payload;
             state.loading = false;
         },
+        // Keeps the saved (hearted) property ids in sync after toggling one
+        setFavorites: (state, action) => {
+            if (state.currentUser) state.currentUser.favorites = action.payload;
+        },
+        clearError: (state) => {
+            state.error = null;
+        },
     },
 });
 
@@ -74,6 +81,8 @@ export const {
     signOutUserFailure,
     signOutUserSuccess,
     signOutUserStart,
+    setFavorites,
+    clearError,
 } = userSlice.actions;
 
 export default userSlice.reducer;

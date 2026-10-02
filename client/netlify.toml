@@ -1,3 +1,20 @@
+# Send /api calls to the backend server. Because the browser only ever talks to
+# this website, the login cookie works without any cross-site setup.
+# Change this address if your backend moves (e.g. to Railway).
+[[redirects]]
+  from = "/api/*"
+  to = "https://real-estate-website-uvk2.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Share links: WhatsApp / Facebook read the photo + price preview from the backend
+[[redirects]]
+  from = "/share/*"
+  to = "https://real-estate-website-uvk2.onrender.com/share/:splat"
+  status = 200
+  force = true
+
+# Let React Router handle every other page
 [[redirects]]
   from = "/*"
   to = "/index.html"
