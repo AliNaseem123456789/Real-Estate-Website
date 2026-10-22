@@ -1,0 +1,28 @@
+# Render blueprint for the chatbot service.
+# The free instance sleeps after 15 minutes idle and takes ~50s to wake, so ping
+# /health from an external cron (cron-job.org or similar) before a demo.
+services:
+  - type: web
+    name: homemate-chatbot
+    runtime: python
+    plan: free
+    rootDir: chatbot
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Set the rest in the Render dashboard; see .env.example for the full list.
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: JINA_API_KEY
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

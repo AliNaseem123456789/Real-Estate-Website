@@ -78,13 +78,7 @@ export default function App() {
         <Footer />
       </div>
       <CompareBar />
-      <FloatingChat
-        botId="realestate"
-        title="HomeMate Assistant 🏠"
-        welcomeMessage="Hello! Looking for properties to buy, sell, or rent? Try: “3 bed house for rent in Lahore under 1 lakh” ✨"
-        primaryColor="#10B981"
-        userId={currentUser?._id}
-      />
+      <FloatingChat primaryColor="#10B981" userId={currentUser?._id} />
     </BrowserRouter>
   );
 }

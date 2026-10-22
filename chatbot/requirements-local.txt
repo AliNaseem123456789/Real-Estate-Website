@@ -1,0 +1,8 @@
+# Extra dependency for EMBED_PROVIDER=local. Install it only where you run the
+# ingest script (your own machine) - NOT on Render, where it will not fit in the
+# free instance's 512 MB alongside the service itself.
+#
+#   pip install -r requirements-local.txt
+#
+# fastembed runs ONNX on CPU, so it pulls in onnxruntime but not torch.
+fastembed>=0.4,<1

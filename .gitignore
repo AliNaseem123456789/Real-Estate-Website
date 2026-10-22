@@ -50,3 +50,11 @@ public/robots.txt
 
 # MongoDB local data (if stored inside project)
 data/
+
+# Scraped source data and contact backups (real seller phone numbers — never commit)
+api/scripts/properties.json
+api/scripts/properties.json.bak
+api/data/contacts-backup.json
+
+# editor backups
+*.old.jsx.bak
