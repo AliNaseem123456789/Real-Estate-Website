@@ -94,6 +94,19 @@ without the others fails the suite.
 
 `openai` covers anything speaking the OpenAI API: set `OPENAI_BASE_URL` to
 DeepSeek, Mistral, OpenRouter, Cerebras or Together and the rest is unchanged.
+Doing so also forces `/v1/chat/completions`, because only OpenAI serves
+`/v1/responses`.
+
+Check the model id against your own account rather than a pricing table - they
+change, and a wrong id fails with a 400 that the fallback used to hide:
+
+```bash
+python -c "from openai import OpenAI; print([m.id for m in OpenAI().models.list()])"
+```
+
+The provider fallback now logs the real error before switching, so a primary
+provider failing every call is visible in the log instead of looking like
+success while the standby quietly does all the work.
 
 Six tool loops is the point of moving off a free tier. At two, the discovery
 agent cannot search, enrich two candidates and compare them in one turn - which

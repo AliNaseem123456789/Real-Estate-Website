@@ -63,6 +63,13 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_model: str = "gpt-6-luna"
     openai_base_url: str = ""  # empty = api.openai.com
+    # langchain-openai picks /v1/responses for OpenAI by default. Other providers
+    # that speak "the OpenAI API" only serve /v1/chat/completions, so a base_url
+    # forces that unless you say otherwise here.
+    openai_use_responses_api: bool | None = None
+    # Several newer OpenAI models accept only the default temperature and reject
+    # anything else with a 400. Set false if the log shows that.
+    openai_send_temperature: bool = True
     # On a quota error or outage, retry the call on the other provider instead of
     # failing the turn. Needs both keys to be set.
     enable_model_fallback: bool = True

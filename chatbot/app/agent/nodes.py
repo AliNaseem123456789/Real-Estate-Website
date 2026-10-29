@@ -57,6 +57,18 @@ def _tool_outputs(messages: list) -> list[str]:
     return [str(m.content) for m in messages if isinstance(m, ToolMessage)]
 
 
+def _language_line(state: AgentState) -> str:
+    """An explicit instruction, always.
+
+    Saying nothing for English and only naming Urdu let the cheap model drift
+    into Urdu on an English question - which it did, from the finalize node,
+    the one place this was missing entirely.
+    """
+    if state.get("language") == "ur":
+        return "\n\nReply in Urdu. The user is reading the Urdu version of the site."
+    return "\n\nReply in English, unless the user's own message is in Urdu or Roman Urdu."
+
+
 def _looks_like_property_talk(message: str) -> bool:
     lowered = message.lower()
     return any(word in lowered for word in PROPERTY_WORDS)
@@ -241,8 +253,7 @@ def agent(state: AgentState) -> dict:
             "refers to one of them without naming it, this is what they mean - call "
             f"get_property with the id: {listed}"
         )
-    if state.get("language") == "ur":
-        preamble += "\n\nThe user is reading the Urdu version of the site. Reply in Urdu."
+    preamble += _language_line(state)
     if current().confirmed:
         preamble += (
             "\n\nThe user has just confirmed the action you proposed. Call the same tool "
@@ -267,9 +278,7 @@ def agent(state: AgentState) -> dict:
 
 def chat(state: AgentState) -> dict:
     """Greetings and small talk: one call, no tools, no retrieval, no filters."""
-    preamble = prompts.CHAT
-    if state.get("language") == "ur":
-        preamble += "\n\nThe user is reading the Urdu version of the site. Reply in Urdu."
+    preamble = prompts.CHAT + _language_line(state)
 
     current().step("answered", "Conversational message - no search needed")
     # The cheap model: a greeting is not worth a request from the small daily quota.
@@ -279,6 +288,29 @@ def chat(state: AgentState) -> dict:
         [SystemMessage(content=preamble), *recent]
     )
     return {"messages": [response]}
+
+
+def _plain_summary(state: AgentState) -> str:
+    """A reply assembled without a model, for when the last call fails.
+
+    Not elegant, but it is grounded by construction - every figure comes from a
+    card a tool actually returned - and it is always better than a 502.
+    """
+    cards = current().cards
+    if not cards:
+        return ("I could not complete that search. Please try again in a moment, or "
+                "narrow it down - a city and a budget help most.")
+
+    lines = ["Here is what I found:"]
+    for card in cards[:5]:
+        suffix = " per month" if card.action == "rent" else ""
+        lines.append(f"- {card.title} - {card.city}, PKR {card.price:,.0f}{suffix} "
+                     f"({card.url})")
+    if len(cards) > 5:
+        lines.append(f"...and {len(cards) - 5} more.")
+    lines.append("Ask me about any of these and I can check whether the price is fair "
+                 "for its area.")
+    return "\n".join(lines)
 
 
 def finalize(state: AgentState) -> dict:
@@ -297,10 +329,23 @@ def finalize(state: AgentState) -> dict:
     instruction = HumanMessage(content=prompts.FINALIZE.format(question=question, facts=facts))
     current().step("wrapping up", "Answering with what the searches already returned")
     _reserve([instruction])
-    response = get_fast_model(temperature=0.2).invoke(
-        [SystemMessage(content=prompts.SYSTEM), instruction]
-    )
-    return {"messages": [response]}
+
+    try:
+        response = get_fast_model(temperature=0.2).invoke(
+            [SystemMessage(content=prompts.SYSTEM + _language_line(state)), instruction]
+        )
+        if text_of(response):
+            return {"messages": [response]}
+        log.warning("Finalize returned nothing; writing the summary directly")
+    except Exception as error:  # noqa: BLE001
+        # A small model primed by a history of tool calls sometimes emits another
+        # one here, and the API rejects a tool call when no tools were offered
+        # ("Tool choice is none, but model called a tool"). That must not cost the
+        # user their answer, so the turn falls back to a written summary.
+        log.error("Finalize call failed (%s: %s); writing the summary directly",
+                  type(error).__name__, str(error)[:200])
+
+    return {"messages": [AIMessage(content=_plain_summary(state))]}
 
 
 # --------------------------------------------------------------------- critique

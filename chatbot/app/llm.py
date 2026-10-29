@@ -23,6 +23,7 @@ import warnings
 from functools import lru_cache
 
 from langchain_core.language_models import BaseChatModel
+from langchain_core.runnables import Runnable, RunnableLambda
 
 from .config import settings
 
@@ -87,12 +88,17 @@ def get_openai(temperature: float = 0.2) -> BaseChatModel:
     kwargs: dict = {
         "model": settings.openai_model,
         "api_key": settings.openai_api_key,
-        "temperature": temperature,
         "max_retries": 1,
         "timeout": 60,
     }
+    if settings.openai_send_temperature:
+        kwargs["temperature"] = temperature
     if settings.openai_base_url:
         kwargs["base_url"] = settings.openai_base_url
+        # DeepSeek, Mistral, OpenRouter and friends have no /v1/responses.
+        kwargs["use_responses_api"] = False
+    if settings.openai_use_responses_api is not None:
+        kwargs["use_responses_api"] = settings.openai_use_responses_api
     return ChatOpenAI(**kwargs)
 
 
@@ -165,15 +171,32 @@ def _other_provider(temperature: float) -> BaseChatModel | None:
         return None
 
 
-def get_agent_model(tools: list, temperature: float = 0.2):
+def get_agent_model(tools: list, temperature: float = 0.2) -> Runnable:
     """Tool-bound reasoner, with the other provider as a standby.
 
-    A 429 from one provider's free tier then continues on the other instead of
-    ending the conversation, which is the difference between a demo that pauses
-    and a demo that dies.
+    A limit on one provider then continues on the other instead of ending the
+    conversation. The fallback LOGS what went wrong rather than swallowing it:
+    a silent fallback once had every OpenAI call failing with a 400 while Groq
+    quietly answered everything, which looked like success for an hour.
     """
+    order = _available()
+    primary_name = order[0] if order else settings.reasoner_provider
     primary = get_reasoner(temperature).bind_tools(tools)
+
     standby = _other_provider(temperature)
     if standby is None:
         return primary
-    return primary.with_fallbacks([standby.bind_tools(tools)])
+
+    standby_name = order[1] if len(order) > 1 else "fallback"
+    standby_bound = standby.bind_tools(tools)
+
+    def invoke(messages):
+        try:
+            return primary.invoke(messages)
+        except Exception as error:  # noqa: BLE001
+            log.error("%s (%s) failed, falling back to %s -- %s: %s",
+                      primary_name, settings.reasoner_name, standby_name,
+                      type(error).__name__, str(error)[:400])
+            return standby_bound.invoke(messages)
+
+    return RunnableLambda(invoke)

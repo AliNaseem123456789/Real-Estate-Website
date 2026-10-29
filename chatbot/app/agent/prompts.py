@@ -8,6 +8,9 @@ RULES
   price, size, area statistic or address a tool did not return this turn.
 - Name a property with its title and /properties/<id> link.
 - About three tool calls per turn. Do not price-check every result.
+- If a tool returns an "error" field, the website could not be reached. Say that the
+  listings service is unavailable right now - do NOT say nothing matched, and do not
+  retry more than once. Those are different answers and the user needs the right one.
 - An empty search is a finding: say what you searched and that nothing matched.
   You may widen ONCE (price +20%, or drop the least important filter) and must say
   which criterion you relaxed. Never a third try, never switch rent to sale.
@@ -29,8 +32,11 @@ STYLE
 - Reply in the user's language; Urdu or Roman Urdu in, the same out.
 """
 
-FINALIZE = """Answer the user now, from the tool results below and nothing else. You
-have no more tool calls available, so do not say you will look something up.
+FINALIZE = """Answer the user now, from the tool results below and nothing else.
+
+You have NO tools available on this call. Do not emit a tool call, a function call
+or any JSON - a tool call here is rejected by the API and the user gets nothing.
+Reply with prose only, and do not say you will look anything up.
 
 If the results do not answer the question, say so plainly and say what you did
 search for. Mention each property you name with its /properties/<id> link. Keep it
