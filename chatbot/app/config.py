@@ -4,6 +4,39 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Settings that depend on how generous the provider is. Applied only to fields
+# you have not set yourself, so a provider switch no longer means remembering to
+# retune five numbers by hand - which is exactly how this project spent a week
+# fighting limits that were not the ones actually binding.
+PROVIDER_PROFILES: dict[str, dict] = {
+    # 8,000 tokens a minute, rolling. Everything has to be small.
+    "groq": {
+        "tokens_per_minute": 8_000,
+        "max_tool_loops": 2,
+        "max_prompt_tokens": 2_000,
+        "max_history_messages": 6,
+        "scope_tools_by_intent": True,
+    },
+    # Generous per minute, but 20 requests a DAY per model on the free tier, so
+    # few calls and big prompts.
+    "gemini": {
+        "tokens_per_minute": 200_000,
+        "max_tool_loops": 3,
+        "max_prompt_tokens": 8_000,
+        "max_history_messages": 12,
+        "scope_tools_by_intent": False,
+    },
+    # Tier 1 is ~500 RPM and 500k TPM: enough headroom for the agent to actually
+    # work multi-step, which is what the whole design was for.
+    "openai": {
+        "tokens_per_minute": 400_000,
+        "max_tool_loops": 6,
+        "max_prompt_tokens": 12_000,
+        "max_history_messages": 16,
+        "scope_tools_by_intent": False,
+    },
+}
+
 # Which output dimensions each embedding provider actually allows.
 # None means "anything in range" (Gemini's Matryoshka goes 128-3072).
 PROVIDER_DIMENSIONS: dict[str, set[int] | None] = {
@@ -24,6 +57,12 @@ class Settings(BaseSettings):
     # tier is 1,000 requests and 200k tokens a day, which is what you want while
     # building. Switch to gemini for the demo if its answers are better.
     reasoner_provider: str = "groq"
+
+    # OpenAI, or anything that speaks its API: DeepSeek, Mistral, OpenRouter,
+    # Cerebras, Together. Point openai_base_url at theirs and set the model.
+    openai_api_key: str = ""
+    openai_model: str = "gpt-6-luna"
+    openai_base_url: str = ""  # empty = api.openai.com
     # On a quota error or outage, retry the call on the other provider instead of
     # failing the turn. Needs both keys to be set.
     enable_model_fallback: bool = True
@@ -118,6 +157,18 @@ class Settings(BaseSettings):
         return bool(self.groq_api_key)
 
     @property
+    def has_openai(self) -> bool:
+        return bool(self.openai_api_key)
+
+    @property
+    def reasoner_name(self) -> str:
+        return {
+            "groq": self.groq_model,
+            "openai": self.openai_model,
+            "gemini": self.gemini_chat_model,
+        }.get(self.reasoner_provider, self.gemini_chat_model)
+
+    @property
     def has_jina(self) -> bool:
         return bool(self.jina_api_key)
 
@@ -136,15 +187,16 @@ class Settings(BaseSettings):
         key is irrelevant to chatting, and demanding one was an early bug that
         made every request fail with a 503.
         """
-        if self.reasoner_provider == "groq":
-            if self.has_groq:
-                return None
-            if self.google_api_key:
-                return None  # fallback below will use Gemini instead
-            return "Set GROQ_API_KEY (REASONER_PROVIDER=groq), or GOOGLE_API_KEY"
-        if self.google_api_key or self.has_groq:
+        keys = {"groq": self.has_groq, "openai": self.has_openai,
+                "gemini": bool(self.google_api_key)}
+        if self.reasoner_provider not in keys:
+            return f"REASONER_PROVIDER must be one of {sorted(keys)}"
+        if keys[self.reasoner_provider]:
             return None
-        return "Set GOOGLE_API_KEY (REASONER_PROVIDER=gemini), or GROQ_API_KEY"
+        if any(keys.values()):
+            return None  # a fallback provider can carry the turn
+        return (f"REASONER_PROVIDER={self.reasoner_provider} needs its API key; "
+                "no other provider key is set either")
 
     def check_embedding_setup(self) -> str | None:
         """Returns a problem description, or None when the settings make sense."""
@@ -164,7 +216,14 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    """Settings, with the provider profile filling in whatever you left alone."""
+    settings = Settings()
+    profile = PROVIDER_PROFILES.get(settings.reasoner_provider, {})
+    for field, value in profile.items():
+        # Anything set explicitly in .env wins over the profile.
+        if field not in settings.model_fields_set:
+            setattr(settings, field, value)
+    return settings
 
 
 settings = get_settings()

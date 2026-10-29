@@ -49,3 +49,7 @@ def notifications_collection() -> Collection:
 
 def viewings_collection() -> Collection:
     return collection("viewing_requests")
+
+
+def diligence_collection() -> Collection:
+    return collection("due_diligence")

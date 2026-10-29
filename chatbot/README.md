@@ -20,6 +20,8 @@ It replaces the old external chatbot gateway the React client used to call.
 | Affordability and instalments | Calculated in Python, mirroring the site's own EmiCalculator, never by the model |
 | Viewing requests and price alerts | Write actions, behind a confirmation gate (see below) |
 | Groundedness | Every figure in the draft reply is checked against what the tools returned; an unsupported number gets the reply rewritten |
+| **Offer preparation** | `offer_brief` builds a negotiation case: where the asking price sits against the area's median and p25–p75 band, a suggested opening offer anchored on comparable sizes, the supporting facts and the caveats. Refuses to anchor at all when the area has no data |
+| **Due diligence** | A document checklist that persists between conversations, built for the property type (a plot gets demarcation and land-use; a house gets the building plan and completion certificate). The valuable part is `check_document_against_listing`: report what the deed says and a size or owner that disagrees with the listing becomes a recorded high-severity finding |
 
 Answers come from tools, never from the model's own memory of the market. When a
 tool returns nothing, the agent says so instead of inventing a listing.
@@ -73,6 +75,29 @@ Listings imported from the scraped dataset have no linked seller account, and th
 site's enquiry endpoint rejects those. The tool falls back to recording the request
 in a `viewing_requests` collection for the admin, and tells the user that is what
 happened.
+
+## Provider profiles
+
+`REASONER_PROVIDER` picks the model **and** the limits that suit it, because the
+binding constraint differs by provider and tuning five numbers by hand is how
+this project spent a week fighting the wrong limit:
+
+| Provider | Tool loops | Prompt budget | Tokens/min | Tools bound |
+| --- | --- | --- | --- | --- |
+| `openai` | 6 | 12,000 | 400,000 | all 18 |
+| `gemini` | 3 | 8,000 | 200,000 | all 18 |
+| `groq` | 2 | 2,000 | 8,000 | scoped by intent |
+
+Anything set explicitly in `.env` overrides the profile. A test asserts that each
+profile's worst-case turn fits its own per-minute budget, so changing one number
+without the others fails the suite.
+
+`openai` covers anything speaking the OpenAI API: set `OPENAI_BASE_URL` to
+DeepSeek, Mistral, OpenRouter, Cerebras or Together and the rest is unchanged.
+
+Six tool loops is the point of moving off a free tier. At two, the discovery
+agent cannot search, enrich two candidates and compare them in one turn - which
+was the feature the whole graph exists for.
 
 ## Quota, and why Groq is the default
 
@@ -289,11 +314,33 @@ The free instance sleeps after 15 minutes, so the first question after a quiet s
 takes about 50 seconds. Ping `/health` from an external cron before showing it to
 anyone.
 
+## The due-diligence workflow
+
+```
+start_due_diligence(property_id)       opens a 9-point checklist for the type
+record_document(key, status, note)     provided | missing | flagged | n/a
+check_document_against_listing(...)    size / owner / address vs the listing
+due_diligence_report(property_id)      progress, what is missing, findings
+```
+
+State lives in the `due_diligence` collection, keyed on the signed-in user or the
+session, so a buyer can come back tomorrow and pick up mid-checklist. Unlike
+`request_viewing` these writes need no confirmation gate: they only touch the
+user's own checklist, and nothing reaches a third party.
+
+The cross-check is the part worth demonstrating. A deed reading 8 marla against a
+listing advertising 10 produces a high-severity finding; a title in a different
+name from the poster produces another, with the advice to ask for a registered
+power of attorney. Name word-order is tolerated and a size within 5% passes, so
+it flags real discrepancies rather than noise.
+
 ## What is not built yet
 
+- **Document upload and extraction.** The checklist is driven by what the user
+  reports, not by reading a PDF. OCR plus field extraction is an input channel on
+  top of a workflow that already works.
 - Photo search. Needs `gemini-embedding-2` and a re-ingest of listing images.
-- The due-diligence document workflow: upload a title deed, extract the fields,
-  cross-check them against the listing. The `knowledge/` guides are the groundwork.
 - The background watchdog that re-runs saved searches and writes a digest.
 - Commute-time filtering.
 - Fraud and listing-quality scoring for the admin queue.
+- Streaming replies.

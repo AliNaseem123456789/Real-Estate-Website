@@ -84,6 +84,7 @@ out/
 
 # Node environment
 .env
+.env.bak
 .env.local
 .env.*.local
 .env.development.local

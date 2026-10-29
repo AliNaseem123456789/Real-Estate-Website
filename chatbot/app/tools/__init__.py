@@ -8,6 +8,13 @@ what the website itself shows.
 from langchain_core.tools import BaseTool
 
 from .actions import create_price_alert, request_viewing
+from .diligence import (
+    check_document_against_listing,
+    due_diligence_report,
+    record_document,
+    start_due_diligence,
+)
+from .offer import offer_brief
 from .finance import affordability, convert_area, monthly_payment
 from .knowledge import listing_similar_to, neighbourhood_knowledge
 from .market import area_overview, price_check
@@ -25,6 +32,11 @@ READ_TOOLS: list[BaseTool] = [
     monthly_payment,
     affordability,
     convert_area,
+    offer_brief,
+    start_due_diligence,
+    record_document,
+    check_document_against_listing,
+    due_diligence_report,
 ]
 
 # Tools with a side effect. They never act straight away: they return a summary
@@ -42,12 +54,17 @@ ALL_TOOLS: list[BaseTool] = READ_TOOLS + WRITE_TOOLS
 # gets only the tools it plausibly uses.
 _CORE: list[BaseTool] = [search_properties, get_property]
 
+_DILIGENCE = [start_due_diligence, record_document, check_document_against_listing,
+              due_diligence_report]
+
 BY_INTENT: dict[str, list[BaseTool]] = {
     "search": [*_CORE, list_cities, listing_similar_to, price_check],
     "compare": [*_CORE, compare_properties, price_check],
     "price_opinion": [*_CORE, price_check, area_overview],
     "area_info": [*_CORE, area_overview, neighbourhood_knowledge],
-    "paperwork": [neighbourhood_knowledge],
+    "paperwork": [neighbourhood_knowledge, *_DILIGENCE],
+    "due_diligence": [*_CORE, *_DILIGENCE, neighbourhood_knowledge],
+    "offer": [*_CORE, offer_brief, price_check, area_overview],
     "finance": [*_CORE, monthly_payment, affordability, convert_area],
     "book_viewing": [*_CORE, request_viewing],
     "alert": [*_CORE, create_price_alert],

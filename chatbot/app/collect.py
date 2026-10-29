@@ -16,6 +16,7 @@ from .schemas import PendingAction, PropertyCard, TraceStep
 
 @dataclass
 class RunContext:
+    session_id: str | None = None
     user_id: str | None = None
     language: str = "en"
     confirmed: bool = False

@@ -70,7 +70,9 @@ Return ONLY a JSON object with these keys, omitting any you do not know:
   bathrooms      number
   min_area_marla number
   intent         one of: search, compare, area_info, price_opinion, finance, paperwork,
-                 book_viewing, alert, smalltalk
+                 due_diligence, offer, book_viewing, alert, smalltalk
+                 "due_diligence" = checking documents or verifying a property.
+                 "offer" = what to pay, or negotiating a price.
                  Use "smalltalk" for greetings, thanks, "who are you", and anything
                  that is not about property. A greeting is never a search.
   reset          true if the user abandoned the previous criteria

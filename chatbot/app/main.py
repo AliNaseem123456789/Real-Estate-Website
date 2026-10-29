@@ -126,7 +126,8 @@ def chat(request: ChatRequest) -> ChatResponse:
             f"Arguments: {json.dumps(pending.get('payload', {}))}]"
         )
 
-    context = RunContext(user_id=request.user_id, language=request.language, confirmed=confirmed)
+    context = RunContext(session_id=session["session_id"], user_id=request.user_id,
+                         language=request.language, confirmed=confirmed)
 
     with run_context(context):
         try:

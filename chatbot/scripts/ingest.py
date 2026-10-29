@@ -40,6 +40,8 @@ KNOWLEDGE_DIR = pathlib.Path(__file__).resolve().parents[1] / "knowledge"
 BATCH = 32
 PAUSE = 1.0
 LOCAL_BATCH = 128
+RETRIES = 3
+RETRY_WAIT = 30  # seconds, multiplied by the attempt number
 
 
 def chunk_id(kind: str, key: str) -> str:
@@ -230,9 +232,45 @@ def _definition() -> dict:
     }
 
 
-def embed_and_store(chunks: list[dict]) -> int:
+def already_embedded(chunks: list[dict]) -> set[str]:
+    """Ids already stored with an embedding of the configured size.
+
+    Without this, a re-run after a rate limit re-embeds everything from the
+    start and stops at the same place, so the ingest could never finish. The
+    size is checked rather than trusted, so switching provider or dimensions
+    correctly forces a re-embed.
+    """
+    ids = [chunk["_id"] for chunk in chunks]
+    try:
+        rows = vector_collection().find(
+            {
+                "_id": {"$in": ids},
+                "$expr": {"$eq": [{"$size": {"$ifNull": ["$embedding", []]}},
+                                  settings.embed_dimensions]},
+            },
+            {"_id": 1},
+        )
+        return {row["_id"] for row in rows}
+    except Exception as error:  # noqa: BLE001 - worst case we re-embed
+        print(f"  ! Could not check what is already stored ({error}); embedding all")
+        return set()
+
+
+def embed_and_store(chunks: list[dict], force: bool = False) -> int:
     if not chunks:
         return 0
+
+    if not force:
+        done = already_embedded(chunks)
+        if done:
+            print(f"  {len(done)} already embedded at {settings.embed_dimensions} dimensions, "
+                  "skipping those")
+            chunks = [chunk for chunk in chunks if chunk["_id"] not in done]
+        if not chunks:
+            print("  nothing left to do")
+            return 0
+        print(f"  {len(chunks)} to embed now")
+
     embedder = get_embeddings("RETRIEVAL_DOCUMENT")
     target = vector_collection()
     stored = 0
@@ -241,16 +279,35 @@ def embed_and_store(chunks: list[dict]) -> int:
 
     for start in range(0, len(chunks), size):
         batch = chunks[start:start + size]
-        try:
-            vectors = embedder.embed_documents([c["text"] for c in batch])
-        except Exception as error:  # noqa: BLE001
-            print(f"  ! Embedding batch {start // size + 1} failed: {error}")
-            print("    Stopping here; re-run to continue (finished chunks are kept).")
+        vectors = None
+        for attempt in range(1, RETRIES + 1):
+            try:
+                vectors = embedder.embed_documents([c["text"] for c in batch])
+                break
+            except Exception as error:  # noqa: BLE001
+                rate_limited = "429" in str(error) or "rate" in str(error).lower()
+                if attempt < RETRIES and rate_limited:
+                    wait = RETRY_WAIT * attempt
+                    print(f"  rate limited; waiting {wait}s then retrying "
+                          f"(attempt {attempt + 1} of {RETRIES})")
+                    time.sleep(wait)
+                    continue
+                print(f"  ! Embedding batch {start // size + 1} failed: {error}")
+                print("    Stopping here. Re-run when the limit resets - it now picks up "
+                      "where it left off instead of starting over.")
+                break
+        if vectors is None:
             break
 
         target.bulk_write(
             [
-                ReplaceOne({"_id": chunk["_id"]}, {**chunk, "embedding": vector}, upsert=True)
+                ReplaceOne(
+                    {"_id": chunk["_id"]},
+                    {**chunk, "embedding": vector,
+                     "provider": settings.embed_provider,
+                     "dims": settings.embed_dimensions},
+                    upsert=True,
+                )
                 for chunk, vector in zip(batch, vectors)
             ],
             ordered=False,
@@ -266,6 +323,40 @@ def embed_and_store(chunks: list[dict]) -> int:
 BUILDERS = {"areas": area_chunks, "listings": listing_chunks, "guides": guide_chunks}
 
 
+def show_status() -> None:
+    """What is in the knowledge base right now, by kind and city."""
+    target = vector_collection()
+    total = target.count_documents({})
+    right_size = target.count_documents(
+        {"$expr": {"$eq": [{"$size": {"$ifNull": ["$embedding", []]}},
+                           settings.embed_dimensions]}}
+    )
+    print(f"{settings.vector_collection}: {total} chunks, {right_size} embedded at "
+          f"{settings.embed_dimensions} dimensions")
+    if total != right_size:
+        print(f"  ! {total - right_size} are missing an embedding or are a different size - "
+              "they will be (re)done on the next run")
+
+    by_kind = target.aggregate([{"$group": {"_id": "$kind", "n": {"$sum": 1}}},
+                                {"$sort": {"n": -1}}])
+    print("\nby kind:")
+    for row in by_kind:
+        print(f"  {row['_id'] or '(none)':<10} {row['n']}")
+
+    print("\nareas by city (embedded / total rows in area_stats):")
+    stored = {r["_id"]: r["n"] for r in target.aggregate([
+        {"$match": {"kind": "area"}},
+        {"$group": {"_id": "$city", "n": {"$sum": 1}}},
+    ])}
+    source = {r["_id"]: r["n"] for r in collection("area_stats").aggregate([
+        {"$group": {"_id": {"$toLower": "$city"}, "n": {"$sum": 1}}},
+    ])}
+    for city in sorted(source, key=lambda c: -source[c]):
+        have = stored.get(city, 0)
+        flag = "" if have >= source[city] else "   <- incomplete"
+        print(f"  {city or '(blank)':<16} {have:>5} / {source[city]:<5}{flag}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build the chatbot knowledge base")
     parser.add_argument("--kinds", default="areas,guides",
@@ -278,12 +369,20 @@ def main() -> None:
                         help="cap the rows read per kind (useful for a first run)")
     parser.add_argument("--skip-index", action="store_true",
                         help="do not touch the Atlas vector index")
+    parser.add_argument("--force", action="store_true",
+                        help="re-embed chunks that are already stored at this size")
+    parser.add_argument("--status", action="store_true",
+                        help="report what is already in the knowledge base, then exit")
     args = parser.parse_args()
 
     if not settings.mongo_uri:
         sys.exit("MONGO_URI is not set. Copy .env.example to .env first.")
     if settings.embed_provider == "gemini" and not settings.google_api_key:
         sys.exit("GOOGLE_API_KEY is not set, so nothing can be embedded.")
+
+    if args.status:
+        show_status()
+        return
 
     kinds = [k.strip() for k in args.kinds.split(",") if k.strip() in BUILDERS]
     if not kinds:
@@ -309,7 +408,7 @@ def main() -> None:
         chunks = (BUILDERS[kind](args.limit, args.min_description) if kind == "listings"
                   else BUILDERS[kind](args.limit))
         print(f"  {len(chunks)} chunks to embed")
-        total += embed_and_store(chunks)
+        total += embed_and_store(chunks, force=args.force)
         print()
 
     print(f"Done. {total} chunks in {settings.vector_collection}.")

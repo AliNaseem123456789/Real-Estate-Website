@@ -73,6 +73,30 @@ def get_gemini(temperature: float = 0.2) -> BaseChatModel:
 
 
 @lru_cache
+def get_openai(temperature: float = 0.2) -> BaseChatModel:
+    """OpenAI, or any API that speaks its protocol.
+
+    openai_base_url points this at DeepSeek, Mistral, OpenRouter, Cerebras or
+    Together without further code, so swapping provider is two env vars.
+    """
+    from langchain_openai import ChatOpenAI
+
+    if not settings.openai_api_key:
+        raise RuntimeError("OPENAI_API_KEY is not set")
+
+    kwargs: dict = {
+        "model": settings.openai_model,
+        "api_key": settings.openai_api_key,
+        "temperature": temperature,
+        "max_retries": 1,
+        "timeout": 60,
+    }
+    if settings.openai_base_url:
+        kwargs["base_url"] = settings.openai_base_url
+    return ChatOpenAI(**kwargs)
+
+
+@lru_cache
 def get_groq(temperature: float = 0.0) -> BaseChatModel:
     from langchain_groq import ChatGroq
 
@@ -88,31 +112,54 @@ def get_groq(temperature: float = 0.0) -> BaseChatModel:
     )
 
 
+BUILDERS = {"openai": get_openai, "groq": get_groq, "gemini": get_gemini}
+
+
+def _available() -> list[str]:
+    """Providers with a key, primary first, then the rest as fallbacks."""
+    have = [name for name, ok in (("openai", settings.has_openai),
+                                  ("groq", settings.has_groq),
+                                  ("gemini", bool(settings.google_api_key))) if ok]
+    primary = settings.reasoner_provider
+    if primary in have:
+        have.remove(primary)
+        have.insert(0, primary)
+    return have
+
+
 def get_reasoner(temperature: float = 0.2) -> BaseChatModel:
-    """The model that answers and calls tools, per REASONER_PROVIDER."""
-    if settings.reasoner_provider == "groq" and settings.has_groq:
-        return get_groq(temperature)
-    if settings.google_api_key:
-        return get_gemini(temperature)
-    # Whatever key exists is better than refusing to start.
-    return get_groq(temperature)
+    """The model that answers and calls tools, per REASONER_PROVIDER.
+
+    Falls through to whichever provider does have a key rather than refusing to
+    start, which is deliberate but worth knowing: /health reports what actually
+    loaded, because a silent fallback once had this project convinced it was
+    running on Gemini for a week while every call went to Groq.
+    """
+    order = _available()
+    if not order:
+        raise RuntimeError("No model provider has an API key")
+    if order[0] != settings.reasoner_provider:
+        log.warning("REASONER_PROVIDER=%s has no key; using %s instead",
+                    settings.reasoner_provider, order[0])
+    return BUILDERS[order[0]](temperature)
 
 
 def get_fast_model(temperature: float = 0.0) -> BaseChatModel:
-    """Slot extraction and small talk: always the cheap model if there is one."""
+    """Slot extraction and small talk: the cheapest thing available."""
     if settings.has_groq:
         return get_groq(temperature)
-    return get_gemini(temperature)
+    return get_reasoner(temperature)
 
 
 def _other_provider(temperature: float) -> BaseChatModel | None:
-    """The model that is not currently primary, when both keys exist."""
+    """The next provider with a key after the primary, if any."""
     if not settings.enable_model_fallback:
         return None
+    order = _available()
+    if len(order) < 2:
+        return None
     try:
-        if settings.reasoner_provider == "groq":
-            return get_gemini(temperature) if settings.google_api_key else None
-        return get_groq(temperature) if settings.has_groq else None
+        return BUILDERS[order[1]](temperature)
     except Exception as error:  # noqa: BLE001
         log.warning("No fallback model available: %s", error)
         return None
